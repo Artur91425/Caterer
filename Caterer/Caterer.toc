@@ -3,7 +3,7 @@
 ## Notes: Auto-trades preset stack counts of water & food to players opening trade.
 ## Notes-ruRU: Автораздача еды и воды для игроков, открывающих торговлю.
 ## Author: Lichery
-## Version: 0.3.2
+## Version: 0.3.3
 ## Dependencites: !Libs
 ## SavedVariables: CatererDB
 ## X-Credits: Original autor Pik/Silvermoon

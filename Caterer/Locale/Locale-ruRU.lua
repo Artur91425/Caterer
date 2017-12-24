@@ -42,8 +42,12 @@ L:RegisterTranslations("ruRU", function() return {
 	["Toggle trade with guild members."] = "Вкл./Выкл. обмен с членами гильдии.",
 	["Other"] = "Другие",
 	["Toggle trade with other players."] = "Вкл./Выкл. обмен с другими игроками.",
+	["Whisper requests"] = "Запросы шепотом",
+	["Toggle whisper requests."] = "Вкл./Выкл. запросы шепотом.",
 	
-	--Errors        
+	--Errors
+	["Service is temporarily disabled."] = "Сервис временно отключен.",
+	["Expected string: '#cat [amount of food] [amount of water]'. Note: the number must be a multiple of 20."] = "Ожидается строка: '#cat [кол-во еды] [кол-во воды]'. Примечание: номер должен быть кратным 20.",
 	["I can't complete the trade right now. I'm out of "] = "Я не могу завершить обмен сейчас. У меня недостаточно ",
 	["Trade is impossible, no "] = "Обмен невозможен, нет ",
 	["food."] = "еды.",

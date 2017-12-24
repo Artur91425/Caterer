@@ -42,8 +42,12 @@ L:RegisterTranslations("enUS", function() return {
 	["Toggle trade with guild members."] = true,
 	["Other"] = true,
 	["Toggle trade with other players."] = true,
+	["Whisper requests"] = true,
+	["Toggle whisper requests."] = true,
 	
-	--Errors        
+	--Errors
+	["Service is temporarily disabled."] = true,
+	["Expected string: '#cat [amount of food] [amount of water]'. Note: the number must be a multiple of 20."] = true,
 	["I can't complete the trade right now. I'm out of "] = true,
 	["Trade is impossible, no "] = true, 	
 	["food."] = true,

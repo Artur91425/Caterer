@@ -5,17 +5,7 @@
 	inspired by Arcanum, Trade Dispenser, Vending Machine.
 	
 	To Do:
-	+ Add command line configuration for add|del|list.
-	+ Add multi-trade sets (if trade group exceeds 6 items).
 	+ Add filter to trade with defined individuals.
-	+ Add blacklist feature.
-	+ Modify myGuild data to update if guild changes.
-	+ Add sub-profiles.
-	+ Add restacking.
-	+ Add partial stack trades.
-	+ Bugfix trade frame exceeding 6 usable slots.
-	+ Bugfix possible sitting issue.
-	+ Add whisper based request system.
 ------------------------------------------------------------------------------------]]
 
 --[[---------------------------------------------------------------------------------
@@ -32,7 +22,7 @@ local FOOD_RANK7 = L["Conjured Cinnamon Roll"]
 local FOOD_RANK6 = L["Conjured Sweet Roll"]
 local WATER_RANK7 = L["Conjured Crystal Water"]
 local WATER_RANK6 = L["Conjured Sparkling Water"]
-local linkForPrint
+local linkForPrint, whisper, whisperCount
 
 Caterer = AceLibrary('AceAddon-2.0'):new('AceConsole-2.0', 'AceEvent-2.0', 'AceDB-2.0', 'AceDebug-2.0')
 
@@ -62,6 +52,7 @@ Caterer.options = {
 			type = 'group',
 			name = L["Filter"],
 			desc = L["Filter options."],
+			order = 3,
 			args = {
 				quantity = {
 					type = 'group',
@@ -266,22 +257,25 @@ Caterer.options = {
 					}
 				}
 			}
-		}
+		},
+		request = {
+			type = 'toggle',
+			name = L["Whisper requests"],
+			desc = L["Toggle whisper requests."],
+			get = function() return Caterer.db.profile.whisperrequest end,
+			set = function(v) Caterer.db.profile.whisperrequest = v end,
+			order = 4,
+		},
 	}
 }
 
 function Caterer:OnInitialize()
 	-- Called when the addon is loaded
 	self.defaults = {
-		tradefilter = {
-			tradeWithAnyone = false,
-			tradeWithRaid = true,
-			tradeWithGuild = true,
-			tradeWithFriend = true,
-		},
-		tradewhat = {'22895', '8079'}, -- {food, water}
+		-- {food, water}
+		whisperrequest = false,
+		tradewhat = {'22895', '8079'},
 		tradecount = {
-			-- class = {food, water}
 			['DRUID']   = {'0' , '60'},
 			['HUNTER']  = {'60', '20'},
 			['PALADIN'] = {'40', '40'},
@@ -289,6 +283,12 @@ function Caterer:OnInitialize()
 			['ROGUE']   = {'60', nil },
 			['WARLOCK'] = {'60', '40'},
 			['WARRIOR'] = {'60', nil }
+		},
+		tradefilter = {
+			tradeWithAnyone = false,
+			tradeWithRaid = true,
+			tradeWithGuild = true,
+			tradeWithFriend = true,
 		}
 	}
 	self:RegisterDB('CatererDB')
@@ -304,11 +304,11 @@ function Caterer:OnInitialize()
 	end
 end
 
-
 function Caterer:OnEnable()
 	-- Called when the addon is enabled
 	self:RegisterEvent('TRADE_SHOW')
 	self:RegisterEvent('TRADE_ACCEPT_UPDATE')
+	self:RegisterEvent('CHAT_MSG_WHISPER')
 end
 
 function Caterer:OnDisable()
@@ -321,22 +321,55 @@ end
 ------------------------------------------------------------------------------------]]
 
 function Caterer:TRADE_SHOW()
+	local performTrade = self:CheckTheTrade()
+	if not performTrade then return end
+
+	local count
 	local _, tradeClass = UnitClass('NPC')
 	local item = self.db.profile.tradewhat
-	local count = self.db.profile.tradecount[tradeClass]
-	local performTrade = self:CheckTheTrade()
-	if performTrade then
-		for i = 1, 2 do
-			if count[i] then
-				self:DoTheTrade(tonumber(item[i]), tonumber(count[i]), i)
-			end
+	if whisper then
+		count = whisperCount
+	else
+		count = self.db.profile.tradecount[tradeClass]
+	end
+	for i = 1, 2 do
+		if count[i] then
+			self:DoTheTrade(tonumber(item[i]), tonumber(count[i]), i)
 		end
 	end
 end
 
 function Caterer:TRADE_ACCEPT_UPDATE(arg1, arg2)
+	-- arg1 - Player has agreed to the trade (1) or not (0)
+	-- arg2 - Target has agreed to the trade (1) or not (0)
 	if arg2 then
 		AcceptTrade()
+	end
+end
+
+function Caterer:CHAT_MSG_WHISPER(arg1, arg2)
+	-- arg1 - Message received
+	-- arg2 - Author
+	local _, _, prefix, foodCount, waterCount = string.find(arg1, '(.+) (.+) (.+)')
+	foodCount = tonumber(foodCount)
+	waterCount = tonumber(waterCount)
+	if not prefix or prefix ~= '#cat' then return end
+	if not self.db.profile.whisperrequest and prefix then
+		return SendChatMessage(L["Service is temporarily disabled."], "WHISPER", nil, arg2)
+	end
+	
+	whisper = false
+	if type(foodCount) ~= 'number' or type(waterCount) ~= 'number' or math.mod(foodCount, 20) ~= 0 or math.mod(waterCount, 20) ~= 0 then
+		return SendChatMessage(L["Expected string: '#cat [amount of food] [amount of water]'. Note: the number must be a multiple of 20."], "WHISPER", nil, arg2)
+	elseif foodCount == 0 and waterCount == 0 then
+		return
+	end
+	
+	TargetByName(arg2, true)
+	if UnitName('target') == arg2 and foodCount and waterCount then
+		whisper = true
+		whisperCount = {foodCount, waterCount}
+		InitiateTrade('target')
 	end
 end
 
@@ -369,7 +402,8 @@ function Caterer:CheckTheTrade()
 	return doTrade
 end
 
-function Caterer:DoTheTrade(itemID, count, i)
+function Caterer:DoTheTrade(itemID, count, itemType)
+	-- itemType: 1 - food, 2 - water
 	if count == 0 then return end
 	local itemCount, slotArray = self:CountItemInBags(itemID)
 	if itemCount < count and linkForPrint then
@@ -377,7 +411,7 @@ function Caterer:DoTheTrade(itemID, count, i)
 		linkForPrint = nil -- link clearing
 		CloseTrade() 
 	elseif not linkForPrint then
-		if i == 1 then
+		if itemType == 1 then
 			SendChatMessage(L["Trade is impossible, no "]..L["food."])
 		else
 			SendChatMessage(L["Trade is impossible, no "]..L["water."])
