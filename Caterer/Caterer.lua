@@ -360,7 +360,6 @@ function Caterer:CHAT_MSG_WHISPER(arg1, arg2)
 		return SendChatMessage(L["Service is temporarily disabled."], "WHISPER", nil, arg2)
 	end
 	
-	whisper = false
 	if type(foodCount) ~= 'number' or type(waterCount) ~= 'number' or math.mod(foodCount, 20) ~= 0 or math.mod(waterCount, 20) ~= 0 then
 		return SendChatMessage(L["Expected string: '#cat <amount of food> <amount of water>'. Note: the number must be a multiple of 20."], "WHISPER", nil, arg2)
 	elseif foodCount + waterCount > 120 then
@@ -425,9 +424,9 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 	
 	local stack = 20
 	
-	for i = 1, table.getn(slotArray) do
-		local _, _, bag, slot = string.find(slotArray[i], 'bag: (%d+), slot: (%d+)')
-		self:Debug(slotArray[i])
+	for k in pairs(slotArray) do
+		local _, _, bag, slot = string.find(slotArray[k], 'bag: (%d+), slot: (%d+)')
+		self:Debug(slotArray[k])
 		PickupContainerItem(bag, slot)
 		if CursorHasItem then
 			local slot = TradeFrame_GetAvailableSlot()
@@ -438,6 +437,7 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 		end
 		if count == 0 then break end
 	end
+	whisper = false -- Turn off the whisper mode after each trade
 end
 
 function Caterer:CountItemInBags(itemID)
