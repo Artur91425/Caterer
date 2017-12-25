@@ -47,10 +47,12 @@ L:RegisterTranslations("enUS", function() return {
 	
 	--Errors
 	["Service is temporarily disabled."] = true,
-	["Expected string: '#cat [amount of food] [amount of water]'. Note: the number must be a multiple of 20."] = true,
+	["The total number of items should not exceed 120."] = true,
+	["Expected string: '#cat <amount of food> <amount of water>'. Note: the number must be a multiple of 20."] = true,
 	["I can't complete the trade right now. I'm out of "] = true,
 	["Trade is impossible, no "] = true, 	
 	["food."] = true,
 	["water."] = true,
-		
+	["Had a problem picking things up!"] = true,		
+
 } end)

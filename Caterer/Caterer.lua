@@ -6,6 +6,7 @@
 	
 	To Do:
 	+ Add filter to trade with defined individuals.
+	+ Add a range check for the teade.
 ------------------------------------------------------------------------------------]]
 
 --[[---------------------------------------------------------------------------------
@@ -350,6 +351,7 @@ end
 function Caterer:CHAT_MSG_WHISPER(arg1, arg2)
 	-- arg1 - Message received
 	-- arg2 - Author
+	whisperCount = {}
 	local _, _, prefix, foodCount, waterCount = string.find(arg1, '(.+) (.+) (.+)')
 	foodCount = tonumber(foodCount)
 	waterCount = tonumber(waterCount)
@@ -360,7 +362,9 @@ function Caterer:CHAT_MSG_WHISPER(arg1, arg2)
 	
 	whisper = false
 	if type(foodCount) ~= 'number' or type(waterCount) ~= 'number' or math.mod(foodCount, 20) ~= 0 or math.mod(waterCount, 20) ~= 0 then
-		return SendChatMessage(L["Expected string: '#cat [amount of food] [amount of water]'. Note: the number must be a multiple of 20."], "WHISPER", nil, arg2)
+		return SendChatMessage(L["Expected string: '#cat <amount of food> <amount of water>'. Note: the number must be a multiple of 20."], "WHISPER", nil, arg2)
+	elseif foodCount + waterCount > 120 then
+		return SendChatMessage(L["The total number of items should not exceed 120."], "WHISPER", nil, arg2)
 	elseif foodCount == 0 and waterCount == 0 then
 		return
 	end
@@ -404,43 +408,35 @@ end
 
 function Caterer:DoTheTrade(itemID, count, itemType)
 	-- itemType: 1 - food, 2 - water
-	if count == 0 then return end
+	if not TradeFrame:IsVisible() or count == 0 then return end
+	linkForPrint = nil -- link clearing
 	local itemCount, slotArray = self:CountItemInBags(itemID)
 	if itemCount < count and linkForPrint then
-		SendChatMessage(L["I can't complete the trade right now. I'm out of "]..linkForPrint..'.')
-		linkForPrint = nil -- link clearing
 		CloseTrade() 
+		return SendChatMessage(L["I can't complete the trade right now. I'm out of "]..linkForPrint..'.')
 	elseif not linkForPrint then
-		if itemType == 1 then
-			SendChatMessage(L["Trade is impossible, no "]..L["food."])
-		else
-			SendChatMessage(L["Trade is impossible, no "]..L["water."])
-		end
 		CloseTrade()
+		if itemType == 1 then
+			return SendChatMessage(L["Trade is impossible, no "]..L["food."])
+		else
+			return SendChatMessage(L["Trade is impossible, no "]..L["water."])
+		end
 	end
 	
 	local stack = 20
-	local currentSlot = 1
 	
 	for i = 1, table.getn(slotArray) do
 		local _, _, bag, slot = string.find(slotArray[i], 'bag: (%d+), slot: (%d+)')
 		self:Debug(slotArray[i])
-		while count ~= 0 do
-			while GetTradePlayerItemLink(currentSlot) do
-				currentSlot = currentSlot + 1
-				if currentSlot > 6 then
-					return self:Debug("|cffff9966Ran out of space in trade window!|r")
-				end
-			end
-			PickupContainerItem(bag, slot)
-			if CursorHasItem then
-				ClickTradeButton(currentSlot)
-				currentSlot = currentSlot + 1
-				count = count - stack
-			else
-				return self:Debug("|cffff9966Had a problem picking things up!|r")
-			end
+		PickupContainerItem(bag, slot)
+		if CursorHasItem then
+			local slot = TradeFrame_GetAvailableSlot()
+			ClickTradeButton(slot)
+			count = count - stack
+		else
+			return self:Debug('|cffff9966'..L["Had a problem picking things up!"]..'|r')
 		end
+		if count == 0 then break end
 	end
 end
 
