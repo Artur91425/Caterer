@@ -3,10 +3,6 @@
 	written by Pik/Silvermoon (YES, I KNOW WHAT IT MEANS IN DUTCH), 
 	code based on FreeRefills code by Kyahx with a shout out to Maia.
 	inspired by Arcanum, Trade Dispenser, Vending Machine.
-	
-	To Do:
-	+ Add filter to trade with defined individuals.
-	+ Add a range check for the teade.
 ------------------------------------------------------------------------------------]]
 
 --[[---------------------------------------------------------------------------------
@@ -19,11 +15,7 @@ local L = AceLibrary('AceLocale-2.2'):new('Caterer')
 	Initialization
 ------------------------------------------------------------------------------------]]
 
-local FOOD_RANK7 = L["Conjured Cinnamon Roll"]
-local FOOD_RANK6 = L["Conjured Sweet Roll"]
-local WATER_RANK7 = L["Conjured Crystal Water"]
-local WATER_RANK6 = L["Conjured Sparkling Water"]
-local linkForPrint, whisper, whisperCount
+local target, linkForPrint, whisper, whisperCount
 
 Caterer = AceLibrary('AceAddon-2.0'):new('AceConsole-2.0', 'AceEvent-2.0', 'AceDB-2.0', 'AceDebug-2.0')
 
@@ -32,57 +24,57 @@ Caterer.options = {
 	type = 'group',
 	args = {
 		food = {
+			order = 1,
 			type = 'text',
 			name = L["Food"],
 			desc = L["Set food for trades."],
-			get = function() return Caterer.db.profile.tradewhat[1] end,
-			set = function(v) Caterer.db.profile.tradewhat[1] = v end,
-			validate = {['22895'] = FOOD_RANK7, ['8076'] = FOOD_RANK6},
-			order = 1,
+			get = function() return Caterer.db.profile.tradeWhat[1] end,
+			set = function(v) Caterer.db.profile.tradeWhat[1] = v end,
+			validate = {['22895'] = L["Conjured Cinnamon Roll"], ['8076'] = L["Conjured Sweet Roll"]},
 		},
 		water = {
+			order = 2,
 			type = 'text',
 			name = L["Water"],
 			desc = L["Set water for trades."],
-			get = function() return Caterer.db.profile.tradewhat[2] end,
-			set = function(v) Caterer.db.profile.tradewhat[2] = v end,
-			validate = {['8079'] = WATER_RANK7, ['8078'] = WATER_RANK6},
-			order = 2,
+			get = function() return Caterer.db.profile.tradeWhat[2] end,
+			set = function(v) Caterer.db.profile.tradeWhat[2] = v end,
+			validate = {['8079'] = L["Conjured Crystal Water"], ['8078'] = L["Conjured Sparkling Water"]},
 		},
 		filter = {
+			order = 3,
 			type = 'group',
 			name = L["Filter"],
 			desc = L["Filter options."],
-			order = 3,
 			args = {
 				quantity = {
+					order = 1,
 					type = 'group',
 					name = L["Quantity"],
 					desc = L["Quantity options."],
-					order = 1,
-					args = { 
+					args = {
 						warlock = {
 							type = 'group',
 							name = L["Warlock"],
 							desc = L["Set items quantity."],
 							args = { 
 								food = {
+									order = 1,
 									type = 'text',
 									name = L["Food"],
 									desc = L["Set quantity for food."],
-									get = function() return Caterer.db.profile.tradecount.WARLOCK[1] end,
-									set = function(v) Caterer.db.profile.tradecount.WARLOCK[1] = v end,
+									get = function() return Caterer.db.profile.tradeCount.WARLOCK[1] end,
+									set = function(v) Caterer.db.profile.tradeCount.WARLOCK[1] = v end,
 									validate = {'0', '20', '40', '60'},
-									order = 1,
 								},
 								water = {
+									order = 2,
 									type = 'text',
 									name = L["Water"],
 									desc = L["Set quantity for water."],
-									get = function() return Caterer.db.profile.tradecount.WARLOCK[2] end,
-									set = function(v) Caterer.db.profile.tradecount.WARLOCK[2] = v end,
+									get = function() return Caterer.db.profile.tradeCount.WARLOCK[2] end,
+									set = function(v) Caterer.db.profile.tradeCount.WARLOCK[2] = v end,
 									validate = {'0', '20', '40', '60'},
-									order = 2,
 								},
 							},
 						},
@@ -92,11 +84,12 @@ Caterer.options = {
 							desc = L["Set items quantity."],
 							args = { 
 								food = {
+									order = 1,
 									type = 'text',
 									name = L["Food"],
 									desc = L["Set quantity for food."],
-									get = function() return Caterer.db.profile.tradecount.WARRIOR[1] end,
-									set = function(v) Caterer.db.profile.tradecount.WARRIOR[1] = v end,
+									get = function() return Caterer.db.profile.tradeCount.WARRIOR[1] end,
+									set = function(v) Caterer.db.profile.tradeCount.WARRIOR[1] = v end,
 									validate = {'0', '20', '40', '60'},
 								},
 							},
@@ -107,22 +100,22 @@ Caterer.options = {
 							desc = L["Set items quantity."],
 							args = { 
 								food = {
+									order = 1,
 									type = 'text',
 									name = L["Food"],
 									desc = L["Set quantity for food."],
-									get = function() return Caterer.db.profile.tradecount.PRIEST[1] end,
-									set = function(v) Caterer.db.profile.tradecount.PRIEST[1] = v end,
+									get = function() return Caterer.db.profile.tradeCount.PRIEST[1] end,
+									set = function(v) Caterer.db.profile.tradeCount.PRIEST[1] = v end,
 									validate = {'0', '20', '40', '60'},
-									order = 1,
 								},
 								water = {
+									order = 2,
 									type = 'text',
 									name = L["Water"],
 									desc = L["Set quantity for water."],
-									get = function() return Caterer.db.profile.tradecount.PRIEST[2] end,
-									set = function(v) Caterer.db.profile.tradecount.PRIEST[2] = v end,
+									get = function() return Caterer.db.profile.tradeCount.PRIEST[2] end,
+									set = function(v) Caterer.db.profile.tradeCount.PRIEST[2] = v end,
 									validate = {'0', '20', '40', '60'},
-									order = 2,
 								},
 							},
 						},
@@ -132,11 +125,12 @@ Caterer.options = {
 							desc = L["Set items quantity."],
 							args = { 
 								food = {
+									order = 1,
 									type = 'text',
 									name = L["Food"],
 									desc = L["Set quantity for food."],
-									get = function() return Caterer.db.profile.tradecount.ROGUE[1] end,
-									set = function(v) Caterer.db.profile.tradecount.ROGUE[1] = v end,
+									get = function() return Caterer.db.profile.tradeCount.ROGUE[1] end,
+									set = function(v) Caterer.db.profile.tradeCount.ROGUE[1] = v end,
 									validate = {'0', '20', '40', '60'},
 								},
 							},
@@ -147,22 +141,22 @@ Caterer.options = {
 							desc = L["Set items quantity."],
 							args = { 
 								food = {
+									order = 1,
 									type = 'text',
 									name = L["Food"],
 									desc = L["Set quantity for food."],
-									get = function() return Caterer.db.profile.tradecount.HUNTER[1] end,
-									set = function(v) Caterer.db.profile.tradecount.HUNTER[1] = v end,
+									get = function() return Caterer.db.profile.tradeCount.HUNTER[1] end,
+									set = function(v) Caterer.db.profile.tradeCount.HUNTER[1] = v end,
 									validate = {'0', '20', '40', '60'},
-									order = 1,
 								},
 								water = {
+									order = 2,
 									type = 'text',
 									name = L["Water"],
 									desc = L["Set quantity for water."],
-									get = function() return Caterer.db.profile.tradecount.HUNTER[2] end,
-									set = function(v) Caterer.db.profile.tradecount.HUNTER[2] = v end,
+									get = function() return Caterer.db.profile.tradeCount.HUNTER[2] end,
+									set = function(v) Caterer.db.profile.tradeCount.HUNTER[2] = v end,
 									validate = {'0', '20', '40', '60'},
-									order = 2,
 								},
 							},
 						},
@@ -172,22 +166,22 @@ Caterer.options = {
 							desc = L["Set items quantity."],
 							args = { 
 								food = {
+									order = 1,
 									type = 'text',
 									name = L["Food"],
 									desc = L["Set quantity for food."],
-									get = function() return Caterer.db.profile.tradecount.PALADIN[1] end,
-									set = function(v) Caterer.db.profile.tradecount.PALADIN[1] = v end,
+									get = function() return Caterer.db.profile.tradeCount.PALADIN[1] end,
+									set = function(v) Caterer.db.profile.tradeCount.PALADIN[1] = v end,
 									validate = {'0', '20', '40', '60'},
-									order = 1,
 								},
 								water = {
+									order = 2,
 									type = 'text',
 									name = L["Water"],
 									desc = L["Set quantity for water."],
-									get = function() return Caterer.db.profile.tradecount.PALADIN[2] end,
-									set = function(v) Caterer.db.profile.tradecount.PALADIN[2] = v end,
+									get = function() return Caterer.db.profile.tradeCount.PALADIN[2] end,
+									set = function(v) Caterer.db.profile.tradeCount.PALADIN[2] = v end,
 									validate = {'0', '20', '40', '60'},
-									order = 2,
 								},
 							},
 						},
@@ -197,76 +191,157 @@ Caterer.options = {
 							desc = L["Set items quantity."],
 							args = { 
 								food = {
+									order = 1,
 									type = 'text',
 									name = L["Food"],
 									desc = L["Set quantity for food."],
-									get = function() return Caterer.db.profile.tradecount.DRUID[1] end,
-									set = function(v) Caterer.db.profile.tradecount.DRUID[1] = v end,
+									get = function() return Caterer.db.profile.tradeCount.DRUID[1] end,
+									set = function(v) Caterer.db.profile.tradeCount.DRUID[1] = v end,
 									validate = {'0', '20', '40', '60'},
-									order = 1,
 								},
 								water = {
+									order = 2,
 									type = 'text',
 									name = L["Water"],
 									desc = L["Set quantity for water."],
-									get = function() return Caterer.db.profile.tradecount.DRUID[2] end,
-									set = function(v) Caterer.db.profile.tradecount.DRUID[2] = v end,
+									get = function() return Caterer.db.profile.tradeCount.DRUID[2] end,
+									set = function(v) Caterer.db.profile.tradeCount.DRUID[2] = v end,
 									validate = {'0', '20', '40', '60'},
-									order = 2,
 								},
 							},
 						},
 					},
 				},	
 				trade = {
+					order = 2,
 					type = 'group',
 					name = L["Trade"],
 					desc = L["Trade options."],
 					args = {
 						friends = {
+							order = 1,
 							type = 'toggle',
 							name = L["Friends"],
 							desc = L["Toggle trade with friends."],
-							get = function() return Caterer.db.profile.tradefilter.tradeWithFriend end,
-							set = function(v) Caterer.db.profile.tradefilter.tradeWithFriend = v end,
-							order = 1
+							get = function() return Caterer.db.profile.tradeFilter.tradeWithFriend end,
+							set = function(v) Caterer.db.profile.tradeFilter.tradeWithFriend = v end,
 						},
 						group = {
+							order = 2,
 							type = 'toggle',
 							name = L["Group/Raid members"],
 							desc = L["Toggle trade with group/raid members."],
-							get = function() return Caterer.db.profile.tradefilter.tradeWithRaid end,
-							set = function(v) Caterer.db.profile.tradefilter.tradeWithRaid = v end,
-							order = 2
+							get = function() return Caterer.db.profile.tradeFilter.tradeWithRaid end,
+							set = function(v) Caterer.db.profile.tradeFilter.tradeWithRaid = v end,
 						},
 						guild = {
+							order = 3,
 							type = 'toggle',
 							name = L["Guild members"],
 							desc = L["Toggle trade with guild members."],
-							get = function() return Caterer.db.profile.tradefilter.tradeWithGuild end,
-							set = function(v) Caterer.db.profile.tradefilter.tradeWithGuild = v end,
-							order = 3
+							get = function() return Caterer.db.profile.tradeFilter.tradeWithGuild end,
+							set = function(v) Caterer.db.profile.tradeFilter.tradeWithGuild = v end,
 						},
 						other = {
+							order = 4,
 							type = 'toggle',
 							name = L["Other"],
 							desc = L["Toggle trade with other players."],
-							get = function() return Caterer.db.profile.tradefilter.tradeWithAnyone end,
-							set = function(v) Caterer.db.profile.tradefilter.tradeWithAnyone = v end,
-							order = 4
-						}
-					}
-				}
+							get = function() return Caterer.db.profile.tradeFilter.tradeWithAnyone end,
+							set = function(v) Caterer.db.profile.tradeFilter.tradeWithAnyone = v end,
+						},
+					},
+				},
+				list = {
+					order = 3,
+					type = 'group',
+					name = L["List of exceptions"],
+					desc = L["Exception list options."],
+					args = {
+						add = {
+							order = 1,
+							type = 'text',
+							name = L["Add"],
+							desc = string.format(L["Add a player to the exclusion list.\n\nUsage: %s"], L["<player name> <amount of food> <amount of water>"]),
+							usage = L["<player name> <amount of food> <amount of water>"],
+							get = false,
+							set = function(str)
+								local _, _, playerName, food, water = string.find(str, '(.+) (%d+) (%d+)')
+								if not food or not water or math.mod(food, 20) ~= 0 or math.mod(water, 20) ~= 0 then
+									return Caterer:Print(string.format(L["Expected string: '%s <amount of food> <amount of water>'. Note: the number must be a multiple of 20."], L["<player name>"]))
+							elseif food + water > 120 then
+									return Caterer:Print(L["The total number of items should not exceed 120."])
+								end
+								local output_msg
+								if Caterer.db.profile.exceptionList[playerName] then
+									output_msg = L["Player"]..' <'..playerName..'> '..string.format(L["was successfully %s."], L["edited"])
+							else
+									output_msg = L["Player"]..' <'..playerName..'> '..string.format(L["was successfully %s."], L["added"])
+								end
+								Caterer.db.profile.exceptionList[playerName] = {}
+								table.insert(Caterer.db.profile.exceptionList[playerName], food)
+								table.insert(Caterer.db.profile.exceptionList[playerName], water)
+								Caterer:Print(output_msg)
+							end,
+						},
+						remove = {
+							order = 2,
+							type = 'text',
+							name = L["Remove"],
+							desc = string.format(L["Remove a player from the exclusion list.\n\nUsage: %s"], L["<player name>"]),
+							usage = L["<player name>"],
+							get = false,
+							set = function(name)
+								if not Caterer.db.profile.exceptionList[name] then
+									return Caterer:Print(L["This player is not listed."])
+								end
+								Caterer.db.profile.exceptionList[name] = nil
+								Caterer:Print(L["Player"]..' <'..name..'> '..string.format(L["was successfully %s."], L["removed"]))
+							end,
+						},
+						print = {
+							order = 3,
+							type = 'execute',
+							name = L["Print"],
+							desc = L["Printing an exclusion list."],
+							func = function()
+							--	if table.getn(Caterer.db.profile.exceptionList) < 1 then
+							--		Caterer:Print("The list is empty.")
+							--else
+							Caterer:Print(L["List of exceptions"]..":")
+									for k, v in pairs(Caterer.db.profile.exceptionList) do
+										DEFAULT_CHAT_FRAME:AddMessage('[|c00bfffff'..k..'|r] = {'..v[1]..', '..v[2]..'}')
+									end
+							--	end
+							end,
+						},
+						space = {
+							order = 4,
+							type = 'header',
+							name = ' ',
+						},
+						clear = {
+							order = 5,
+							type = 'execute',
+							name = L["Clear"],
+							desc = L["Completely clears the entire list."],
+							func = function()
+								Caterer.db.profile.exceptionList = {}
+								Caterer:Print(L["The list has been successfully cleared."])
+							end,
+						},
+					},
+				},
 			}
 		},
-		request = {
+		requests = {
+			order = 4,
 			type = 'toggle',
 			name = L["Whisper requests"],
 			desc = L["Toggle whisper requests."],
-			get = function() return Caterer.db.profile.whisperrequest end,
-			set = function(v) Caterer.db.profile.whisperrequest = v end,
-			order = 4,
-		},
+			get = function() return Caterer.db.profile.whisperRequest end,
+			set = function(v) Caterer.db.profile.whisperRequest = v end,
+		}
 	}
 }
 
@@ -274,9 +349,10 @@ function Caterer:OnInitialize()
 	-- Called when the addon is loaded
 	self.defaults = {
 		-- {food, water}
-		whisperrequest = false,
-		tradewhat = {'22895', '8079'},
-		tradecount = {
+		exceptionList = {},
+		whisperRequest = false,
+		tradeWhat = {'22895', '8079'},
+		tradeCount = {
 			['DRUID']   = {'0' , '60'},
 			['HUNTER']  = {'60', '20'},
 			['PALADIN'] = {'40', '40'},
@@ -285,7 +361,7 @@ function Caterer:OnInitialize()
 			['WARLOCK'] = {'60', '40'},
 			['WARRIOR'] = {'60', nil }
 		},
-		tradefilter = {
+		tradeFilter = {
 			tradeWithAnyone = false,
 			tradeWithRaid = true,
 			tradeWithGuild = true,
@@ -296,9 +372,22 @@ function Caterer:OnInitialize()
 	self:RegisterDefaults('profile', self.defaults)
 	self:RegisterChatCommand({'/caterer', '/cater'}, Caterer.options)
 	
+	--Popup Box if player class not mage
+	StaticPopupDialogs["CATERER_NOT_MAGE"] = {
+		text = L["Attention! Addon Caterer is not designed for your class. It must be disabled.."],
+		button1 = DISABLE,
+		OnAccept = function()
+			self:ToggleActive(false)
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = false,
+		preferredIndex = 3
+	}
 	local _, class = UnitClass('player')
 	if class ~= 'MAGE' then
-		self:ToggleActive(false)
+		if not self:IsActive() then return end
+		StaticPopup_Show ("CATERER_NOT_MAGE")
 	else
 		self:ToggleActive(true)
 		DEFAULT_CHAT_FRAME:AddMessage('Caterer '..GetAddOnMetadata('Caterer', 'Version')..L[" loaded."])
@@ -324,14 +413,16 @@ end
 function Caterer:TRADE_SHOW()
 	local performTrade = self:CheckTheTrade()
 	if not performTrade then return end
-
+	
 	local count
 	local _, tradeClass = UnitClass('NPC')
-	local item = self.db.profile.tradewhat
+	local item = self.db.profile.tradeWhat
 	if whisper then
 		count = whisperCount
+	elseif self.db.profile.exceptionList[UnitName('NPC')] then
+		count = self.db.profile.exceptionList[UnitName('NPC')]
 	else
-		count = self.db.profile.tradecount[tradeClass]
+		count = self.db.profile.tradeCount[tradeClass]
 	end
 	for i = 1, 2 do
 		if count[i] then
@@ -356,12 +447,12 @@ function Caterer:CHAT_MSG_WHISPER(arg1, arg2)
 	foodCount = tonumber(foodCount)
 	waterCount = tonumber(waterCount)
 	if not prefix or prefix ~= '#cat' then return end
-	if not self.db.profile.whisperrequest and prefix then
+	if not self.db.profile.whisperRequest and prefix then
 		return SendChatMessage(L["Service is temporarily disabled."], "WHISPER", nil, arg2)
 	end
 	
 	if type(foodCount) ~= 'number' or type(waterCount) ~= 'number' or math.mod(foodCount, 20) ~= 0 or math.mod(waterCount, 20) ~= 0 then
-		return SendChatMessage(L["Expected string: '#cat <amount of food> <amount of water>'. Note: the number must be a multiple of 20."], "WHISPER", nil, arg2)
+		return SendChatMessage(string.format(L["Expected string: '%s <amount of food> <amount of water>'. Note: the number must be a multiple of 20."], '#cat'), "WHISPER", nil, arg2)
 	elseif foodCount + waterCount > 120 then
 		return SendChatMessage(L["The total number of items should not exceed 120."], "WHISPER", nil, arg2)
 	elseif foodCount == 0 and waterCount == 0 then
@@ -369,10 +460,19 @@ function Caterer:CHAT_MSG_WHISPER(arg1, arg2)
 	end
 	
 	TargetByName(arg2, true)
-	if UnitName('target') == arg2 and foodCount and waterCount then
+	target = UnitName('target')
+	if target == arg2 and foodCount and waterCount then
 		whisper = true
 		whisperCount = {foodCount, waterCount}
+		self:RegisterEvent('UI_ERROR_MESSAGE') -- check if target to trade is too far
 		InitiateTrade('target')
+	end
+end
+
+function Caterer:UI_ERROR_MESSAGE(arg1)
+	-- arg1 - Message received
+	if arg1 == ERR_TRADE_TOO_FAR then
+		return SendChatMessage(L["It is necessary to come closer"], "WHISPER", nil, target)
 	end
 end
 
@@ -384,17 +484,17 @@ function Caterer:CheckTheTrade()
 	--Check to see whether or not we should execute the trade.
 	local doTrade = false
 	
-	if self.db.profile.tradefilter.tradeWithAnyone then
+	if self.db.profile.tradeFilter.tradeWithAnyone then
 		doTrade = true
-	elseif self.db.profile.tradefilter.tradeWithRaid then
+	elseif self.db.profile.tradeFilter.tradeWithRaid then
 		if UnitInParty('NPC') or UnitInRaid('NPC') then
 			doTrade = true
 		end
-	elseif self.db.profile.tradefilter.tradeWithGuild then
+	elseif self.db.profile.tradeFilter.tradeWithGuild then
 		if GetGuildInfo('NPC') == GetGuildInfo('player') then
 			doTrade = true
 		end
-	elseif self.db.profile.tradefilter.tradeWithFriend then
+	elseif self.db.profile.tradeFilter.tradeWithFriend then
 		for i = 1, GetNumFriends() do
 			if UnitName('NPC') == GetFriendInfo(i) then
 				doTrade = true
@@ -429,7 +529,7 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 		self:Debug(slotArray[k])
 		PickupContainerItem(bag, slot)
 		if CursorHasItem then
-			local slot = TradeFrame_GetAvailableSlot()
+			local slot = TradeFrame_GetAvailableSlot() -- blizzard function
 			ClickTradeButton(slot)
 			count = count - stack
 		else

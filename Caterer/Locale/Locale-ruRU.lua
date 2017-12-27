@@ -2,6 +2,7 @@ local L = AceLibrary("AceLocale-2.2"):new("Caterer")
 
 L:RegisterTranslations("ruRU", function() return {
 	
+	["Attention! Addon Caterer is not designed for your class. It must be disabled.."] = "Внимание! Аддон Caterer не предназначен для вашего класса. Он должен быть отключен.",
 	[" loaded."] = " загружен.",
 	
 	--Food
@@ -42,17 +43,37 @@ L:RegisterTranslations("ruRU", function() return {
 	["Toggle trade with guild members."] = "Вкл./Выкл. обмен с членами гильдии.",
 	["Other"] = "Другие",
 	["Toggle trade with other players."] = "Вкл./Выкл. обмен с другими игроками.",
+	["List of exceptions"] = "Список исключений",
+	["Exception list options."] = "Настройки списка исключений.",
+	["Add"] = "Добавить",
+	["Add a player to the exclusion list.\n\nUsage: %s"] = "Добавляет игрока в список исключений.\n\nИспользование: %s",
+	["<player name> <amount of food> <amount of water>"] = "<имя игрока> <кол-во еды> <кол-во воды>",
+	["Player"] = "Игрок",
+	["was successfully %s."] = "был успешно %s.",
+	["added"] = "добавлен",
+	["edited"] = "изменен",
+	["removed"] = "удален",
+	["Remove"] = "Удалить",
+	["Remove a player from the exclusion list.\n\nUsage: %s"] = "Удаляет игрока из списка исключений.\n\nИспользование: %s",
+	["<player name>"] = "<имя игрока>",
+	["Print"] = "Печать",
+	["Printing an exclusion list."] = "Выводит список исключений.",
+	["Clear"] = "Очистить",
+	["Completely clears the entire list."] = "Полностью очищает список исключений.",
+	["The list has been successfully cleared."] = "Список был успешно очищен.",
 	["Whisper requests"] = "Запросы шепотом",
 	["Toggle whisper requests."] = "Вкл./Выкл. запросы шепотом.",
 	
 	--Errors
 	["Service is temporarily disabled."] = "Сервис временно отключен.",
 	["The total number of items should not exceed 120."] = "Общее количество предметов не должно превышать 120.",
-	["Expected string: '#cat <amount of food> <amount of water>'. Note: the number must be a multiple of 20."] = "Ожидается строка: '#cat <кол-во еды> <кол-во воды>'. Примечание: номер должен быть кратным 20.",
+	["Expected string: '%s <amount of food> <amount of water>'. Note: the number must be a multiple of 20."] = "Ожидается строка: '%s <кол-во еды> <кол-во воды>'. Примечание: номер должен быть кратным 20.",
 	["I can't complete the trade right now. I'm out of "] = "Я не могу завершить обмен сейчас. У меня недостаточно ",
 	["Trade is impossible, no "] = "Обмен невозможен, нет ",
 	["food."] = "еды.",
 	["water."] = "воды.",
 	["Had a problem picking things up!"] = "Имеется проблема со взятием предмета!",		
-
+	["It is necessary to come closer."] = "Необходимо подойти ближе.",
+	["This player is not listed."] = "Этого игрока нет в списке.",
+	
 } end)
