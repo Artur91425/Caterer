@@ -2,8 +2,8 @@ local L = AceLibrary("AceLocale-2.2"):new("Caterer")
 
 L:RegisterTranslations("ruRU", function() return {
 	
-	["Attention! Addon Caterer is not designed for your class. It must be disabled.."] = "Внимание! Аддон Caterer не предназначен для вашего класса. Он должен быть отключен.",
-	[" loaded."] = " загружен.",
+	["Attention! Addon Caterer is not designed for your class. It must be disabled."] = "Внимание! Аддон Caterer не предназначен для вашего класса. Он должен быть отключен.",
+	["loaded."] = "загружен.",
 	
 	--Food
 	["Conjured Cinnamon Roll"] = "Сотворенная плюшка с корицей",
@@ -46,18 +46,20 @@ L:RegisterTranslations("ruRU", function() return {
 	["List of exceptions"] = "Список исключений",
 	["Exception list options."] = "Настройки списка исключений.",
 	["Add"] = "Добавить",
-	["Add a player to the exclusion list.\n\nUsage: %s"] = "Добавляет игрока в список исключений.\n\nИспользование: %s",
-	["<player name> <amount of food> <amount of water>"] = "<имя игрока> <кол-во еды> <кол-во воды>",
+	["Add a player to the exclusion list.\n\nUsage: <%s> <%s> <%s>"] = "Добавляет игрока в список исключений.\n\nИспользование: <%s> <%s> <%s>",
+	["player name"] = "имя игрока",
+	["amount of food"] = "кол-во еды",
+	["amount of water"] = "кол-во воды",
 	["Player"] = "Игрок",
 	["was successfully %s."] = "был успешно %s.",
 	["added"] = "добавлен",
 	["edited"] = "изменен",
 	["removed"] = "удален",
 	["Remove"] = "Удалить",
-	["Remove a player from the exclusion list.\n\nUsage: %s"] = "Удаляет игрока из списка исключений.\n\nИспользование: %s",
-	["<player name>"] = "<имя игрока>",
+	["Remove a player from the exclusion list.\n\nUsage: <%s>"] = "Удаляет игрока из списка исключений.\n\nИспользование: <%s>",
 	["Print"] = "Печать",
 	["Printing an exclusion list."] = "Выводит список исключений.",
+	["The list is empty."] = "Список пуст.",
 	["Clear"] = "Очистить",
 	["Completely clears the entire list."] = "Полностью очищает список исключений.",
 	["The list has been successfully cleared."] = "Список был успешно очищен.",
@@ -67,9 +69,9 @@ L:RegisterTranslations("ruRU", function() return {
 	--Errors
 	["Service is temporarily disabled."] = "Сервис временно отключен.",
 	["The total number of items should not exceed 120."] = "Общее количество предметов не должно превышать 120.",
-	["Expected string: '%s <amount of food> <amount of water>'. Note: the number must be a multiple of 20."] = "Ожидается строка: '%s <кол-во еды> <кол-во воды>'. Примечание: номер должен быть кратным 20.",
-	["I can't complete the trade right now. I'm out of "] = "Я не могу завершить обмен сейчас. У меня недостаточно ",
-	["Trade is impossible, no "] = "Обмен невозможен, нет ",
+	["Expected string: '<%s> <%s> <%s>'. Note: the number must be a multiple of 20."] = "Ожидается строка: '<%s> <%s> <%s>'. Примечание: номер должен быть кратным 20.",
+	["I can't complete the trade right now. I'm out of"] = "Я не могу завершить обмен сейчас. У меня недостаточно",
+	["Trade is impossible, no %s"] = "Обмен невозможен, нет %s",
 	["food."] = "еды.",
 	["water."] = "воды.",
 	["Had a problem picking things up!"] = "Имеется проблема со взятием предмета!",		

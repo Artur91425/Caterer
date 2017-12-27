@@ -262,34 +262,34 @@ Caterer.options = {
 							order = 1,
 							type = 'text',
 							name = L["Add"],
-							desc = string.format(L["Add a player to the exclusion list.\n\nUsage: %s"], L["<player name> <amount of food> <amount of water>"]),
-							usage = L["<player name> <amount of food> <amount of water>"],
+							desc = string.format(L["Add a player to the exclusion list.\n\nUsage: <%s> <%s> <%s>"], L["player name"], L["amount of food"], L["amount of water"]),
+							usage = '<'..L["player name"]..'> <'..L["amount of food"]..'> <'..L["amount of water"]..'>',
 							get = false,
 							set = function(str)
 								local _, _, playerName, food, water = string.find(str, '(.+) (%d+) (%d+)')
 								if not food or not water or math.mod(food, 20) ~= 0 or math.mod(water, 20) ~= 0 then
-									return Caterer:Print(string.format(L["Expected string: '%s <amount of food> <amount of water>'. Note: the number must be a multiple of 20."], L["<player name>"]))
-							elseif food + water > 120 then
+									return Caterer:Print(string.format(L["Expected string: '<%s> <%s> <%s>'. Note: the number must be a multiple of 20."], L["player name"], L["amount of food"], L["amount of water"]))
+								elseif food + water > 120 then
 									return Caterer:Print(L["The total number of items should not exceed 120."])
 								end
-								local output_msg
+								local type
 								if Caterer.db.profile.exceptionList[playerName] then
-									output_msg = L["Player"]..' <'..playerName..'> '..string.format(L["was successfully %s."], L["edited"])
-							else
-									output_msg = L["Player"]..' <'..playerName..'> '..string.format(L["was successfully %s."], L["added"])
+									type = L["edited"]
+								else
+									type = L["added"]
 								end
 								Caterer.db.profile.exceptionList[playerName] = {}
 								table.insert(Caterer.db.profile.exceptionList[playerName], food)
 								table.insert(Caterer.db.profile.exceptionList[playerName], water)
-								Caterer:Print(output_msg)
+								Caterer:Print(L["Player"]..' <'..playerName..'> '..string.format(L["was successfully %s."], type))
 							end,
 						},
 						remove = {
 							order = 2,
 							type = 'text',
 							name = L["Remove"],
-							desc = string.format(L["Remove a player from the exclusion list.\n\nUsage: %s"], L["<player name>"]),
-							usage = L["<player name>"],
+							desc = string.format(L["Remove a player from the exclusion list.\n\nUsage: <%s>"], L["player name"]),
+							usage = '<'..L["player name"]..'>',
 							get = false,
 							set = function(name)
 								if not Caterer.db.profile.exceptionList[name] then
@@ -305,14 +305,15 @@ Caterer.options = {
 							name = L["Print"],
 							desc = L["Printing an exclusion list."],
 							func = function()
-							--	if table.getn(Caterer.db.profile.exceptionList) < 1 then
-							--		Caterer:Print("The list is empty.")
-							--else
-							Caterer:Print(L["List of exceptions"]..":")
+								if not next(Caterer.db.profile.exceptionList) then
+									Caterer:Print(L["The list is empty."])
+								else
+									Caterer:Print(L["List of exceptions"]..":")
+									DEFAULT_CHAT_FRAME:AddMessage(string.format('[|c00bfffff%s|r] = {%s, %s}', L["player name"], L["Food"], L["Water"]))
 									for k, v in pairs(Caterer.db.profile.exceptionList) do
 										DEFAULT_CHAT_FRAME:AddMessage('[|c00bfffff'..k..'|r] = {'..v[1]..', '..v[2]..'}')
 									end
-							--	end
+								end
 							end,
 						},
 						space = {
@@ -374,7 +375,7 @@ function Caterer:OnInitialize()
 	
 	--Popup Box if player class not mage
 	StaticPopupDialogs["CATERER_NOT_MAGE"] = {
-		text = L["Attention! Addon Caterer is not designed for your class. It must be disabled.."],
+		text = L["Attention! Addon Caterer is not designed for your class. It must be disabled."],
 		button1 = DISABLE,
 		OnAccept = function()
 			self:ToggleActive(false)
@@ -390,7 +391,7 @@ function Caterer:OnInitialize()
 		StaticPopup_Show ("CATERER_NOT_MAGE")
 	else
 		self:ToggleActive(true)
-		DEFAULT_CHAT_FRAME:AddMessage('Caterer '..GetAddOnMetadata('Caterer', 'Version')..L[" loaded."])
+		DEFAULT_CHAT_FRAME:AddMessage('Caterer '..GetAddOnMetadata('Caterer', 'Version')..' '..L["loaded."])
 	end
 end
 
@@ -448,13 +449,13 @@ function Caterer:CHAT_MSG_WHISPER(arg1, arg2)
 	waterCount = tonumber(waterCount)
 	if not prefix or prefix ~= '#cat' then return end
 	if not self.db.profile.whisperRequest and prefix then
-		return SendChatMessage(L["Service is temporarily disabled."], "WHISPER", nil, arg2)
+		return SendChatMessage(L["Service is temporarily disabled."], 'WHISPER', nil, arg2)
 	end
 	
 	if type(foodCount) ~= 'number' or type(waterCount) ~= 'number' or math.mod(foodCount, 20) ~= 0 or math.mod(waterCount, 20) ~= 0 then
-		return SendChatMessage(string.format(L["Expected string: '%s <amount of food> <amount of water>'. Note: the number must be a multiple of 20."], '#cat'), "WHISPER", nil, arg2)
+		return SendChatMessage(string.format(L["Expected string: '<%s> <%s> <%s>'. Note: the number must be a multiple of 20."], '#cat', L["amount of food"], L["amount of water"]), 'WHISPER', nil, arg2)
 	elseif foodCount + waterCount > 120 then
-		return SendChatMessage(L["The total number of items should not exceed 120."], "WHISPER", nil, arg2)
+		return SendChatMessage(L["The total number of items should not exceed 120."], 'WHISPER', nil, arg2)
 	elseif foodCount == 0 and waterCount == 0 then
 		return
 	end
@@ -472,7 +473,7 @@ end
 function Caterer:UI_ERROR_MESSAGE(arg1)
 	-- arg1 - Message received
 	if arg1 == ERR_TRADE_TOO_FAR then
-		return SendChatMessage(L["It is necessary to come closer"], "WHISPER", nil, target)
+		return SendChatMessage(L["It is necessary to come closer."], 'WHISPER', nil, target)
 	end
 end
 
@@ -512,13 +513,13 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 	local itemCount, slotArray = self:CountItemInBags(itemID)
 	if itemCount < count and linkForPrint then
 		CloseTrade() 
-		return SendChatMessage(L["I can't complete the trade right now. I'm out of "]..linkForPrint..'.')
+		return SendChatMessage(L["I can't complete the trade right now. I'm out of"]..' '..linkForPrint..'.')
 	elseif not linkForPrint then
 		CloseTrade()
 		if itemType == 1 then
-			return SendChatMessage(L["Trade is impossible, no "]..L["food."])
+			return SendChatMessage(string.format(L["Trade is impossible, no %s"], L["food."]))
 		else
-			return SendChatMessage(L["Trade is impossible, no "]..L["water."])
+			return SendChatMessage(string.format(L["Trade is impossible, no %s"], L["water."]))
 		end
 	end
 	

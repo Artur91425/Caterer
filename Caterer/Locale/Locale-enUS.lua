@@ -2,8 +2,8 @@ local L = AceLibrary("AceLocale-2.2"):new("Caterer")
 
 L:RegisterTranslations("enUS", function() return {
 	
-	["Attention! Addon Caterer is not designed for your class. It must be disabled.."] = true,
-	[" loaded."] = true,
+	["Attention! Addon Caterer is not designed for your class. It must be disabled."] = true,
+	["loaded."] = true,
 	
 	--Food
 	["Conjured Cinnamon Roll"] = true,
@@ -46,18 +46,20 @@ L:RegisterTranslations("enUS", function() return {
 	["List of exceptions"] = true,
 	["Exception list options."] = true,
 	["Add"] = true,
-	["Add a player to the exclusion list.\n\nUsage: %s"] = true,
-	["<player name> <amount of food> <amount of water>"] = true,
+	["Add a player to the exclusion list.\n\nUsage: <%s> <%s> <%s>"] = true,
+	["player name"] = true,
+	["amount of food"] = true,
+	["amount of water"] = true,
 	["Player"] = true,
 	["was successfully %s."] = true,
 	["added"] = true,
 	["edited"] = true,
 	["removed"] = true,
 	["Remove"] = true,
-	["Remove a player from the exclusion list.\n\nUsage: %s"] = true,
-	["<player name>"] = true,
+	["Remove a player from the exclusion list.\n\nUsage: <%s>"] = true,
 	["Print"] = true,
 	["Printing an exclusion list."] = true,
+	["The list is empty."] = true,
 	["Clear"] = true,
 	["Completely clears the entire list."] = true,
 	["The list has been successfully cleared."] = true,
@@ -67,9 +69,9 @@ L:RegisterTranslations("enUS", function() return {
 	--Errors
 	["Service is temporarily disabled."] = true,
 	["The total number of items should not exceed 120."] = true,
-	["Expected string: '%s <amount of food> <amount of water>'. Note: the number must be a multiple of 20."] = true,
-	["I can't complete the trade right now. I'm out of "] = true,
-	["Trade is impossible, no "] = true, 	
+	["Expected string: '<%s> <%s> <%s>'. Note: the number must be a multiple of 20."] = true,
+	["I can't complete the trade right now. I'm out of"] = true,
+	["Trade is impossible, no %s"] = true, 	
 	["food."] = true,
 	["water."] = true,
 	["Had a problem picking things up!"] = true,		
