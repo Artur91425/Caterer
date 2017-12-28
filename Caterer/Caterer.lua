@@ -85,6 +85,7 @@ end
 ------------------------------------------------------------------------------------]]
 
 function Caterer:TRADE_SHOW()
+	if self:IsEventRegistered('UI_ERROR_MESSAGE') then self:UnregisterEvent('UI_ERROR_MESSAGE') end
 	local performTrade = self:CheckTheTrade()
 	if not performTrade then return end
 	
@@ -146,8 +147,10 @@ end
 function Caterer:UI_ERROR_MESSAGE(arg1)
 	-- arg1 - Message received
 	if arg1 == ERR_TRADE_TOO_FAR then
-		return SendChatMessage(L["It is necessary to come closer."], 'WHISPER', nil, target)
+		SendChatMessage(L["It is necessary to come closer."], 'WHISPER', nil, target)
 	end
+	self:UnregisterEvent('UI_ERROR_MESSAGE')
+	return
 end
 
 --[[--------------------------------------------------------------------------------
