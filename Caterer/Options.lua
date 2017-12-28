@@ -301,13 +301,13 @@ function Caterer:AddPlayer(str)
 	local _, _, playerName, food, water = string.find(str, '(.+) (%d+) (%d+)')
 	if not food or not water or math.mod(food, 20) ~= 0 or math.mod(water, 20) ~= 0 then
 		return self:Print(string.format(L["Expected string: '<%s> <%s> <%s>'. Note: the number must be a multiple of 20."], L["player name"], L["amount of food"], L["amount of water"]))
-		elseif food + water > 120 then
+	elseif food + water > 120 then
 		return self:Print(L["The total number of items should not exceed 120."])
 	end
 	local type
 	if self.db.profile.exceptionList[playerName] then
 		type = L["edited"]
-		else
+	else
 		type = L["added"]
 	end
 	self.db.profile.exceptionList[playerName] = {}
@@ -327,7 +327,7 @@ end
 function Caterer:PrintList()
 	if not next(self.db.profile.exceptionList) then
 		self:Print(L["The list is empty."])
-		else
+	else
 		self:Print(L["List of exceptions"]..":")
 		DEFAULT_CHAT_FRAME:AddMessage(string.format('[|c00bfffff%s|r] = {%s, %s}', L["player name"], L["Food"], L["Water"]))
 		for k, v in pairs(self.db.profile.exceptionList) do

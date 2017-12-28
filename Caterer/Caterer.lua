@@ -44,10 +44,10 @@ function Caterer:OnInitialize()
 	}
 	self:RegisterDB('CatererDB')
 	self:RegisterDefaults('profile', self.defaults)
-	self:RegisterChatCommand({'/caterer', '/cater'}, self:RegisterOptions())
+	self:RegisterChatCommand({'/caterer', '/cater', '/cat'}, self:RegisterOptions())
 	
 	--Popup Box if player class not mage
-	StaticPopupDialogs["CATERER_NOT_MAGE"] = {
+	StaticPopupDialogs['CATERER_NOT_MAGE'] = {
 		text = L["Attention! Addon Caterer is not designed for your class. It must be disabled."],
 		button1 = DISABLE,
 		OnAccept = function()
@@ -61,7 +61,7 @@ function Caterer:OnInitialize()
 	local _, class = UnitClass('player')
 	if class ~= 'MAGE' then
 		if not self:IsActive() then return end
-		StaticPopup_Show ("CATERER_NOT_MAGE")
+		StaticPopup_Show('CATERER_NOT_MAGE')
 	else
 		self:ToggleActive(true)
 		DEFAULT_CHAT_FRAME:AddMessage('Caterer '..GetAddOnMetadata('Caterer', 'Version')..' '..L["loaded."])
@@ -210,7 +210,7 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 			ClickTradeButton(slot)
 			count = count - stack
 		else
-			return self:Debug('|cffff9966'..L["Had a problem picking things up!"]..'|r')
+			return self:Print('|cffff9966'..L["Had a problem picking things up!"]..'|r')
 		end
 		if count == 0 then break end
 	end
