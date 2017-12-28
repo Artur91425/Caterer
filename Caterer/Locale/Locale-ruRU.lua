@@ -13,13 +13,13 @@ L:RegisterTranslations("ruRU", function() return {
 	["Conjured Sparkling Water"] = "Сотворенная шипучка",
 	
 	--Classes
-	["Warlock"] = "Чернокнижник",
-	["Warrior"] = "Воин",
-	["Priest"] = "Жрец",
-	["Rogue"] = "Разбойник",
+	["Druid"] = "Друид",
 	["Hunter"] = "Охотник",
 	["Paladin"] = "Паладин",
-	["Druid"] = "Друид",
+	["Priest"] = "Жрец",
+	["Rogue"] = "Разбойник",
+	["Warlock"] = "Чернокнижник",
+	["Warrior"] = "Воин",
 	
 	--Options
 	["Food"] = "Еда",

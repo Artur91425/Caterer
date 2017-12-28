@@ -16,7 +16,7 @@ CatererFu.cannotDetachTooltip = true
 CatererFu.cannotHideText = true
 CatererFu.cannotHideIcon = true
 
-CatererFu.OnMenuRequest = Caterer.options
+CatererFu.OnMenuRequest = Caterer:RegisterOptions()
 local args = AceLibrary('FuBarPlugin-2.0'):GetAceOptionsDataTable(CatererFu)
 for k,v in pairs(args) do
 	if not CatererFu.OnMenuRequest.args[k] then

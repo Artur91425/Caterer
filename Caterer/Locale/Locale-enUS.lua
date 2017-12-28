@@ -13,13 +13,13 @@ L:RegisterTranslations("enUS", function() return {
 	["Conjured Sparkling Water"] = true,
 	
 	--Classes
-	["Warlock"] = true,
-	["Warrior"] = true,
-	["Priest"] = true,
-	["Rogue"] = true,
+	["Druid"] = true,
 	["Hunter"] = true,
 	["Paladin"] = true,
-	["Druid"] = true,
+	["Priest"] = true,
+	["Rogue"] = true,
+	["Warlock"] = true,
+	["Warrior"] = true,
 	
 	--Options
 	["Food"] = true,
