@@ -1,8 +1,8 @@
-local L = AceLibrary("AceLocale-2.2"):new("Caterer")
+local L = AceLibrary('AceLocale-2.2'):new('Caterer')
 
-L:RegisterTranslations("enUS", function() return {
+L:RegisterTranslations('enUS', function() return {
 	
-	["Attention! Addon Caterer is not designed for your class. It must be disabled."] = true,
+	["Attention! Addon %s is not designed for your class. It must be disabled."] = true,
 	["loaded."] = true,
 	
 	--Food
@@ -11,15 +11,6 @@ L:RegisterTranslations("enUS", function() return {
 	--Water
 	["Conjured Crystal Water"] = true,
 	["Conjured Sparkling Water"] = true,
-	
-	--Classes
-	["Druid"] = true,
-	["Hunter"] = true,
-	["Paladin"] = true,
-	["Priest"] = true,
-	["Rogue"] = true,
-	["Warlock"] = true,
-	["Warrior"] = true,
 	
 	--Options
 	["Food"] = true,

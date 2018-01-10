@@ -17,14 +17,14 @@ local L = AceLibrary('AceLocale-2.2'):new('Caterer')
 
 Caterer = AceLibrary('AceAddon-2.0'):new('AceConsole-2.0', 'AceEvent-2.0', 'AceDB-2.0', 'AceDebug-2.0')
 
-local target, linkForPrint, whisper, whisperCount
+local target, linkForPrint, whisperMode, whisperCount
 
 function Caterer:OnInitialize()
 	-- Called when the addon is loaded
 	self.defaults = {
-		-- {food, water}
 		exceptionList = {},
 		whisperRequest = false,
+		-- {food, water}
 		tradeWhat = {'22895', '8079'},
 		tradeCount = {
 			['DRUID']   = {'0' , '60'},
@@ -36,24 +36,25 @@ function Caterer:OnInitialize()
 			['WARRIOR'] = {'60', nil }
 		},
 		tradeFilter = {
-			tradeWithAnyone = false,
-			tradeWithRaid = true,
-			tradeWithGuild = true,
-			tradeWithFriend = true,
+			anyone = false,
+			raid = true,
+			guild = true,
+			friend = true
 		}
 	}
 	self:RegisterDB('CatererDB')
 	self:RegisterDefaults('profile', self.defaults)
-	self:RegisterChatCommand({'/caterer', '/cater', '/cat'}, self:RegisterOptions())
+	self:RegisterChatCommand({'/caterer', '/cater', '/cat'}, self:GetOptionsTable())
 	
 	--Popup Box if player class not mage
 	StaticPopupDialogs['CATERER_NOT_MAGE'] = {
-		text = L["Attention! Addon Caterer is not designed for your class. It must be disabled."],
+		text = string.format(L["Attention! Addon %s is not designed for your class. It must be disabled."], '|cff00BFFFCaterer|r'),
 		button1 = DISABLE,
 		OnAccept = function()
 			self:ToggleActive(false)
 		end,
 		timeout = 0,
+		showAlert = 1,
 		whileDead = true,
 		hideOnEscape = false,
 		preferredIndex = 3
@@ -64,7 +65,7 @@ function Caterer:OnInitialize()
 		StaticPopup_Show('CATERER_NOT_MAGE')
 	else
 		self:ToggleActive(true)
-		DEFAULT_CHAT_FRAME:AddMessage('Caterer '..GetAddOnMetadata('Caterer', 'Version')..' '..L["loaded."])
+		DEFAULT_CHAT_FRAME:AddMessage('Caterer '..GetAddOnMetadata('Caterer', 'Version')..' '..L["loaded."], 0, 191, 255)
 	end
 end
 
@@ -73,11 +74,6 @@ function Caterer:OnEnable()
 	self:RegisterEvent('TRADE_SHOW')
 	self:RegisterEvent('TRADE_ACCEPT_UPDATE')
 	self:RegisterEvent('CHAT_MSG_WHISPER')
-end
-
-function Caterer:OnDisable()
-	-- Called when the addon is disabled
-	self:UnregisterAllEvents()
 end
 
 --[[---------------------------------------------------------------------------------
@@ -92,7 +88,7 @@ function Caterer:TRADE_SHOW()
 	local count
 	local _, tradeClass = UnitClass('NPC')
 	local item = self.db.profile.tradeWhat
-	if whisper then
+	if whisperMode then
 		count = whisperCount
 	elseif self.db.profile.exceptionList[UnitName('NPC')] then
 		count = self.db.profile.exceptionList[UnitName('NPC')]
@@ -123,13 +119,13 @@ function Caterer:CHAT_MSG_WHISPER(arg1, arg2)
 	waterCount = tonumber(waterCount)
 	if not prefix or prefix ~= '#cat' then return end
 	if not self.db.profile.whisperRequest and prefix then
-		return SendChatMessage(L["Service is temporarily disabled."], 'WHISPER', nil, arg2)
+		return SendChatMessage('[Caterer] '..L["Service is temporarily disabled."], 'WHISPER', nil, arg2)
 	end
 	
 	if type(foodCount) ~= 'number' or type(waterCount) ~= 'number' or math.mod(foodCount, 20) ~= 0 or math.mod(waterCount, 20) ~= 0 then
-		return SendChatMessage(string.format(L["Expected string: '<%s> <%s> <%s>'. Note: the number must be a multiple of 20."], '#cat', L["amount of food"], L["amount of water"]), 'WHISPER', nil, arg2)
+		return SendChatMessage(string.format('[Caterer] '..L["Expected string: '<%s> <%s> <%s>'. Note: the number must be a multiple of 20."], '#cat', L["amount of food"], L["amount of water"]), 'WHISPER', nil, arg2)
 	elseif foodCount + waterCount > 120 then
-		return SendChatMessage(L["The total number of items should not exceed 120."], 'WHISPER', nil, arg2)
+		return SendChatMessage('[Caterer] '..L["The total number of items should not exceed 120."], 'WHISPER', nil, arg2)
 	elseif foodCount == 0 and waterCount == 0 then
 		return
 	end
@@ -137,7 +133,7 @@ function Caterer:CHAT_MSG_WHISPER(arg1, arg2)
 	TargetByName(arg2, true)
 	target = UnitName('target')
 	if target == arg2 and foodCount and waterCount then
-		whisper = true
+		whisperMode = true
 		whisperCount = {foodCount, waterCount}
 		self:RegisterEvent('UI_ERROR_MESSAGE') -- check if target to trade is too far
 		InitiateTrade('target')
@@ -147,10 +143,9 @@ end
 function Caterer:UI_ERROR_MESSAGE(arg1)
 	-- arg1 - Message received
 	if arg1 == ERR_TRADE_TOO_FAR then
-		SendChatMessage(L["It is necessary to come closer."], 'WHISPER', nil, target)
+		SendChatMessage('[Caterer] '..L["It is necessary to come closer."], 'WHISPER', nil, target)
 	end
 	self:UnregisterEvent('UI_ERROR_MESSAGE')
-	return
 end
 
 --[[--------------------------------------------------------------------------------
@@ -161,17 +156,17 @@ function Caterer:CheckTheTrade()
 	--Check to see whether or not we should execute the trade.
 	local doTrade = false
 	
-	if self.db.profile.tradeFilter.tradeWithAnyone then
+	if self.db.profile.tradeFilter.anyone then
 		doTrade = true
-	elseif self.db.profile.tradeFilter.tradeWithRaid then
+	elseif self.db.profile.tradeFilter.raid then
 		if UnitInParty('NPC') or UnitInRaid('NPC') then
 			doTrade = true
 		end
-	elseif self.db.profile.tradeFilter.tradeWithGuild then
+	elseif self.db.profile.tradeFilter.guild then
 		if GetGuildInfo('NPC') == GetGuildInfo('player') then
 			doTrade = true
 		end
-	elseif self.db.profile.tradeFilter.tradeWithFriend then
+	elseif self.db.profile.tradeFilter.friend then
 		for i = 1, GetNumFriends() do
 			if UnitName('NPC') == GetFriendInfo(i) then
 				doTrade = true
@@ -206,7 +201,7 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 		self:Debug(slotArray[k])
 		PickupContainerItem(bag, slot)
 		if CursorHasItem then
-			local slot = TradeFrame_GetAvailableSlot() -- blizzard function
+			local slot = TradeFrame_GetAvailableSlot() -- Blizzard function
 			ClickTradeButton(slot)
 			count = count - stack
 		else
@@ -214,7 +209,7 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 		end
 		if count == 0 then break end
 	end
-	whisper = false -- Turn off the whisper mode after each trade
+	whisperMode = false -- Turn off the whisper mode after each trade
 end
 
 function Caterer:CountItemInBags(itemID)

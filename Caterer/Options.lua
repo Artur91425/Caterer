@@ -1,30 +1,31 @@
-local L = AceLibrary("AceLocale-2.2"):new("Caterer")
+local L = AceLibrary('AceLocale-2.2'):new('Caterer')
+local BC = AceLibrary('Babble-Class-2.2')
 local opts = {}
 
-function Caterer:RegisterOptions()
+function Caterer:GetOptionsTable()
 	opts = {
 		type = 'group',
 		args = {
 			food = {
-				order = 2,
+				order = 1,
 				type = 'text',
 				name = L["Food"],
 				desc = L["Set food for trades."],
 				get = function() return self.db.profile.tradeWhat[1] end,
 				set = function(v) self.db.profile.tradeWhat[1] = v end,
-				validate = {['22895'] = L["Conjured Cinnamon Roll"], ['8076'] = L["Conjured Sweet Roll"]},
+				validate = {['22895'] = L["Conjured Cinnamon Roll"], ['8076'] = L["Conjured Sweet Roll"]}
 			},
 			water = {
-				order = 3,
+				order = 2,
 				type = 'text',
 				name = L["Water"],
 				desc = L["Set water for trades."],
 				get = function() return self.db.profile.tradeWhat[2] end,
 				set = function(v) self.db.profile.tradeWhat[2] = v end,
-				validate = {['8079'] = L["Conjured Crystal Water"], ['8078'] = L["Conjured Sparkling Water"]},
+				validate = {['8079'] = L["Conjured Crystal Water"], ['8078'] = L["Conjured Sparkling Water"]}
 			},
 			filter = {
-				order = 4,
+				order = 3,
 				type = 'group',
 				name = L["Filter"],
 				desc = L["Filter options."],
@@ -37,7 +38,7 @@ function Caterer:RegisterOptions()
 						args = {
 							druid = {
 								type = 'group',
-								name = L["Druid"],
+								name = BC["Druid"],
 								desc = L["Set items quantity."],
 								args = { 
 									food = {
@@ -47,7 +48,7 @@ function Caterer:RegisterOptions()
 										desc = L["Set quantity for food."],
 										get = function() return self.db.profile.tradeCount.DRUID[1] end,
 										set = function(v) self.db.profile.tradeCount.DRUID[1] = v end,
-										validate = {'0', '20', '40', '60'},
+										validate = {'0', '20', '40', '60'}
 									},
 									water = {
 										order = 2,
@@ -56,13 +57,13 @@ function Caterer:RegisterOptions()
 										desc = L["Set quantity for water."],
 										get = function() return self.db.profile.tradeCount.DRUID[2] end,
 										set = function(v) self.db.profile.tradeCount.DRUID[2] = v end,
-										validate = {'0', '20', '40', '60'},
-									},
-								},
+										validate = {'0', '20', '40', '60'}
+									}
+								}
 							},
 							hunter = {
 								type = 'group',
-								name = L["Hunter"],
+								name = BC["Hunter"],
 								desc = L["Set items quantity."],
 								args = { 
 									food = {
@@ -72,7 +73,7 @@ function Caterer:RegisterOptions()
 										desc = L["Set quantity for food."],
 										get = function() return self.db.profile.tradeCount.HUNTER[1] end,
 										set = function(v) self.db.profile.tradeCount.HUNTER[1] = v end,
-										validate = {'0', '20', '40', '60'},
+										validate = {'0', '20', '40', '60'}
 									},
 									water = {
 										order = 2,
@@ -81,13 +82,13 @@ function Caterer:RegisterOptions()
 										desc = L["Set quantity for water."],
 										get = function() return self.db.profile.tradeCount.HUNTER[2] end,
 										set = function(v) self.db.profile.tradeCount.HUNTER[2] = v end,
-										validate = {'0', '20', '40', '60'},
-									},
-								},
+										validate = {'0', '20', '40', '60'}
+									}
+								}
 							},
 							paladin = {
 								type = 'group',
-								name = L["Paladin"],
+								name = BC["Paladin"],
 								desc = L["Set items quantity."],
 								args = { 
 									food = {
@@ -97,7 +98,7 @@ function Caterer:RegisterOptions()
 										desc = L["Set quantity for food."],
 										get = function() return self.db.profile.tradeCount.PALADIN[1] end,
 										set = function(v) self.db.profile.tradeCount.PALADIN[1] = v end,
-										validate = {'0', '20', '40', '60'},
+										validate = {'0', '20', '40', '60'}
 									},
 									water = {
 										order = 2,
@@ -106,13 +107,13 @@ function Caterer:RegisterOptions()
 										desc = L["Set quantity for water."],
 										get = function() return self.db.profile.tradeCount.PALADIN[2] end,
 										set = function(v) self.db.profile.tradeCount.PALADIN[2] = v end,
-										validate = {'0', '20', '40', '60'},
-									},
-								},
+										validate = {'0', '20', '40', '60'}
+									}
+								}
 							},
 							priest = {
 								type = 'group',
-								name = L["Priest"],
+								name = BC["Priest"],
 								desc = L["Set items quantity."],
 								args = { 
 									food = {
@@ -122,7 +123,7 @@ function Caterer:RegisterOptions()
 										desc = L["Set quantity for food."],
 										get = function() return self.db.profile.tradeCount.PRIEST[1] end,
 										set = function(v) self.db.profile.tradeCount.PRIEST[1] = v end,
-										validate = {'0', '20', '40', '60'},
+										validate = {'0', '20', '40', '60'}
 									},
 									water = {
 										order = 2,
@@ -131,13 +132,13 @@ function Caterer:RegisterOptions()
 										desc = L["Set quantity for water."],
 										get = function() return self.db.profile.tradeCount.PRIEST[2] end,
 										set = function(v) self.db.profile.tradeCount.PRIEST[2] = v end,
-										validate = {'0', '20', '40', '60'},
-									},
-								},
+										validate = {'0', '20', '40', '60'}
+									}
+								}
 							},
 							rogue = {
 								type = 'group',
-								name = L["Rogue"],
+								name = BC["Rogue"],
 								desc = L["Set items quantity."],
 								args = { 
 									food = {
@@ -147,13 +148,13 @@ function Caterer:RegisterOptions()
 										desc = L["Set quantity for food."],
 										get = function() return self.db.profile.tradeCount.ROGUE[1] end,
 										set = function(v) self.db.profile.tradeCount.ROGUE[1] = v end,
-										validate = {'0', '20', '40', '60'},
-									},
-								},
+										validate = {'0', '20', '40', '60'}
+									}
+								}
 							},
 							warlock = {
 								type = 'group',
-								name = L["Warlock"],
+								name = BC["Warlock"],
 								desc = L["Set items quantity."],
 								args = { 
 									food = {
@@ -163,7 +164,7 @@ function Caterer:RegisterOptions()
 										desc = L["Set quantity for food."],
 										get = function() return self.db.profile.tradeCount.WARLOCK[1] end,
 										set = function(v) self.db.profile.tradeCount.WARLOCK[1] = v end,
-										validate = {'0', '20', '40', '60'},
+										validate = {'0', '20', '40', '60'}
 									},
 									water = {
 										order = 2,
@@ -172,13 +173,13 @@ function Caterer:RegisterOptions()
 										desc = L["Set quantity for water."],
 										get = function() return self.db.profile.tradeCount.WARLOCK[2] end,
 										set = function(v) self.db.profile.tradeCount.WARLOCK[2] = v end,
-										validate = {'0', '20', '40', '60'},
-									},
-								},
+										validate = {'0', '20', '40', '60'}
+									}
+								}
 							},
 							warrior = {
 								type = 'group',
-								name = L["Warrior"],
+								name = BC["Warrior"],
 								desc = L["Set items quantity."],
 								args = { 
 									food = {
@@ -188,11 +189,11 @@ function Caterer:RegisterOptions()
 										desc = L["Set quantity for food."],
 										get = function() return self.db.profile.tradeCount.WARRIOR[1] end,
 										set = function(v) self.db.profile.tradeCount.WARRIOR[1] = v end,
-										validate = {'0', '20', '40', '60'},
-									},
-								},
-							},
-						},
+										validate = {'0', '20', '40', '60'}
+									}
+								}
+							}
+						}
 					},	
 					trade = {
 						order = 2,
@@ -205,34 +206,34 @@ function Caterer:RegisterOptions()
 								type = 'toggle',
 								name = L["Friends"],
 								desc = L["Toggle trade with friends."],
-								get = function() return self.db.profile.tradeFilter.tradeWithFriend end,
-								set = function(v) self.db.profile.tradeFilter.tradeWithFriend = v end,
+								get = function() return self.db.profile.tradeFilter.friend end,
+								set = function(v) self.db.profile.tradeFilter.friend = v end,
 							},
 							group = {
 								order = 2,
 								type = 'toggle',
 								name = L["Group/Raid members"],
 								desc = L["Toggle trade with group/raid members."],
-								get = function() return self.db.profile.tradeFilter.tradeWithRaid end,
-								set = function(v) self.db.profile.tradeFilter.tradeWithRaid = v end,
+								get = function() return self.db.profile.tradeFilter.raid end,
+								set = function(v) self.db.profile.tradeFilter.raid = v end,
 							},
 							guild = {
 								order = 3,
 								type = 'toggle',
 								name = L["Guild members"],
 								desc = L["Toggle trade with guild members."],
-								get = function() return self.db.profile.tradeFilter.tradeWithGuild end,
-								set = function(v) self.db.profile.tradeFilter.tradeWithGuild = v end,
+								get = function() return self.db.profile.tradeFilter.guild end,
+								set = function(v) self.db.profile.tradeFilter.guild = v end,
 							},
 							other = {
 								order = 4,
 								type = 'toggle',
 								name = L["Other"],
 								desc = L["Toggle trade with other players."],
-								get = function() return self.db.profile.tradeFilter.tradeWithAnyone end,
-								set = function(v) self.db.profile.tradeFilter.tradeWithAnyone = v end,
-							},
-						},
+								get = function() return self.db.profile.tradeFilter.anyone end,
+								set = function(v) self.db.profile.tradeFilter.anyone = v end,
+							}
+						}
 					},
 					list = {
 						order = 3,
@@ -279,13 +280,13 @@ function Caterer:RegisterOptions()
 									self.db.profile.exceptionList = {}
 									self:Print(L["The list has been successfully cleared."])
 								end,
-							},
-						},
-					},
+							}
+						}
+					}
 				}
 			},
 			requests = {
-				order = 5,
+				order = 4,
 				type = 'toggle',
 				name = L["Whisper requests"],
 				desc = L["Toggle whisper requests."],
