@@ -52,6 +52,7 @@ function Caterer:OnInitialize()
 		button1 = DISABLE,
 		OnAccept = function()
 			self:ToggleActive(false)
+			FuBarPluginCatererFrameMinimapButton:Hide()
 		end,
 		timeout = 0,
 		showAlert = 1,
