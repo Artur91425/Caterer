@@ -44,7 +44,7 @@ function Caterer:OnInitialize()
 	}
 	self:RegisterDB('CatererDB')
 	self:RegisterDefaults('profile', self.defaults)
-	self:RegisterChatCommand({'/caterer', '/cater', '/cat'}, self:GetOptionsTable())
+	self:RegisterChatCommand({'/caterer', '/cater', '/cat'}, Caterer.options)
 	
 	--Popup Box if player class not mage
 	StaticPopupDialogs['CATERER_NOT_MAGE'] = {
@@ -65,8 +65,9 @@ function Caterer:OnInitialize()
 		StaticPopup_Show('CATERER_NOT_MAGE')
 	else
 		self:ToggleActive(true)
-		DEFAULT_CHAT_FRAME:AddMessage('Caterer '..GetAddOnMetadata('Caterer', 'Version')..' '..L["loaded."], 0, 191, 255)
+		ChatFrame1:AddMessage('Caterer '..GetAddOnMetadata('Caterer', 'Version')..' '..L["loaded."], 0, 191, 255)
 	end
+	--self:PrintTab(self:Caterer_options())
 end
 
 function Caterer:OnEnable()

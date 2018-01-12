@@ -60,6 +60,7 @@ L:RegisterTranslations('ruRU', function() return {
 	--Errors
 	["Service is temporarily disabled."] = "Сервис временно отключен.",
 	["The total number of items should not exceed 120."] = "Общее количество предметов не должно превышать 120.",
+	["The quantity for both items can not be zero."] = "Количество для обоих предметов не может быть равно нулю.",
 	["Expected string: '<%s> <%s> <%s>'. Note: the number must be a multiple of 20."] = "Ожидается строка: '<%s> <%s> <%s>'. Примечание: номер должен быть кратным 20.",
 	["I can't complete the trade right now. I'm out of"] = "Я не могу завершить обмен сейчас. У меня недостаточно",
 	["Trade is impossible, no %s"] = "Обмен невозможен, нет %s",
