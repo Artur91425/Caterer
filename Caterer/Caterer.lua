@@ -143,6 +143,7 @@ end
 function Caterer:UI_ERROR_MESSAGE(arg1)
 	-- arg1 - Message received
 	if arg1 == ERR_TRADE_TOO_FAR then
+		whisperMode = false
 		SendChatMessage('[Caterer] '..L["It is necessary to come closer."], 'WHISPER', nil, target)
 	end
 	self:UnregisterEvent('UI_ERROR_MESSAGE')
