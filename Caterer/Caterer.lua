@@ -5,46 +5,45 @@
 	inspired by Arcanum, Trade Dispenser, Vending Machine.
 ------------------------------------------------------------------------------------]]
 
+Caterer = AceLibrary('AceAddon-2.0'):new('AceConsole-2.0', 'AceEvent-2.0', 'AceDB-2.0', 'AceDebug-2.0')
+
 --[[---------------------------------------------------------------------------------
-	Localization
+	Locals
 ------------------------------------------------------------------------------------]]
 
 local L = AceLibrary('AceLocale-2.2'):new('Caterer')
+local target, linkForPrint, whisperMode, whisperCount
+local defaults = {
+	exceptionList = {},
+	whisperRequest = false,
+	-- {food, water}
+	tradeWhat = {'22895', '8079'},
+	tradeCount = {
+		['DRUID']   = {'0' , '60'},
+		['HUNTER']  = {'60', '20'},
+		['PALADIN'] = {'40', '40'},
+		['PRIEST']  = {'0' , '60'},
+		['ROGUE']   = {'60', nil },
+		['WARLOCK'] = {'60', '40'},
+		['WARRIOR'] = {'60', nil }
+	},
+	tradeFilter = {
+		anyone = false,
+		raid = true,
+		guild = true,
+		friend = true
+	}
+}
 
 --[[---------------------------------------------------------------------------------
 	Initialization
 ------------------------------------------------------------------------------------]]
 
-Caterer = AceLibrary('AceAddon-2.0'):new('AceConsole-2.0', 'AceEvent-2.0', 'AceDB-2.0', 'AceDebug-2.0')
-
-local target, linkForPrint, whisperMode, whisperCount
-
 function Caterer:OnInitialize()
 	-- Called when the addon is loaded
-	self.defaults = {
-		exceptionList = {},
-		whisperRequest = false,
-		-- {food, water}
-		tradeWhat = {'22895', '8079'},
-		tradeCount = {
-			['DRUID']   = {'0' , '60'},
-			['HUNTER']  = {'60', '20'},
-			['PALADIN'] = {'40', '40'},
-			['PRIEST']  = {'0' , '60'},
-			['ROGUE']   = {'60', nil },
-			['WARLOCK'] = {'60', '40'},
-			['WARRIOR'] = {'60', nil }
-		},
-		tradeFilter = {
-			anyone = false,
-			raid = true,
-			guild = true,
-			friend = true
-		}
-	}
 	self:RegisterDB('CatererDB')
-	self:RegisterDefaults('profile', self.defaults)
-	self:RegisterChatCommand({'/caterer', '/cater', '/cat'}, Caterer.options)
+	self:RegisterDefaults('profile', defaults)
+	self:RegisterChatCommand({'/caterer', '/cater', '/cat'}, self.options)
 	
 	--Popup Box if player class not mage
 	StaticPopupDialogs['CATERER_NOT_MAGE'] = {
@@ -114,13 +113,12 @@ end
 function Caterer:CHAT_MSG_WHISPER(arg1, arg2)
 	-- arg1 - Message received
 	-- arg2 - Author
-	whisperCount = {}
 	local _, _, prefix, foodCount, waterCount = string.find(arg1, '(#cat) (.+) (.+)')
+	if not prefix then return end
+
 	foodCount = tonumber(foodCount)
 	waterCount = tonumber(waterCount)
-	if not prefix then
-		return
-	elseif not self.db.profile.whisperRequest then
+	if not self.db.profile.whisperRequest then
 		return SendChatMessage('[Caterer] '..L["Service is temporarily disabled."], 'WHISPER', nil, arg2)
 	elseif type(foodCount) ~= 'number' or type(waterCount) ~= 'number' or math.mod(foodCount, 20) ~= 0 or math.mod(waterCount, 20) ~= 0 then
 		return SendChatMessage(string.format('[Caterer] '..L["Expected string: '<%s> <%s> <%s>'. Note: the number must be a multiple of 20."], '#cat', L["amount of food"], L["amount of water"]), 'WHISPER', nil, arg2)
@@ -132,7 +130,8 @@ function Caterer:CHAT_MSG_WHISPER(arg1, arg2)
 	
 	TargetByName(arg2, true)
 	target = UnitName('target')
-	if target == arg2 and foodCount and waterCount then
+	whisperCount = {}
+	if target == arg2 then
 		whisperMode = true
 		whisperCount = {foodCount, waterCount}
 		self:RegisterEvent('UI_ERROR_MESSAGE') -- check if target to trade is too far
@@ -185,13 +184,20 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 	local itemCount, slotArray = self:GetNumItems(itemID)
 	if itemCount < count and linkForPrint then
 		CloseTrade() 
-		return SendChatMessage(L["I can't complete the trade right now. I'm out of"]..' '..linkForPrint..'.')
+		return SendChatMessage(string.format(L["I can't complete the trade right now. I'm out of %s."], linkForPrint))
 	elseif not linkForPrint then
 		CloseTrade()
+		local itemTable = {
+			[22895] = L["Conjured Cinnamon Roll"],
+			[8076] = L["Conjured Sweet Roll"],
+			[8079] = L["Conjured Crystal Water"],
+			[8078] = L["Conjured Sparkling Water"],
+		}
+		linkForPrint = '|cffffffff|Hitem:'..itemID..':0:0:0:0:0:0:0:0|h['..itemTable[itemID]..']|h|r'
 		if itemType == 1 then
-			return SendChatMessage(string.format(L["Trade is impossible, no %s"], L["food."]))
+			return SendChatMessage(string.format(L["Trade is impossible, no %s."], linkForPrint))
 		else
-			return SendChatMessage(string.format(L["Trade is impossible, no %s"], L["water."]))
+			return SendChatMessage(string.format(L["Trade is impossible, no %s."], linkForPrint))
 		end
 	end
 	
@@ -210,7 +216,7 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 		end
 		if count == 0 then break end
 	end
-	whisperMode = false -- Turn off the whisper mode after each trade
+	if whisperMode then whisperMode = false end
 end
 
 function Caterer:GetNumItems(itemID)
