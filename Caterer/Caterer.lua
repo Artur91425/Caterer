@@ -181,7 +181,7 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 	-- itemType: 1 - food, 2 - water
 	if not TradeFrame:IsVisible() or count == 0 then return end
 	linkForPrint = nil -- link clearing
-	local itemCount, slotArray = self:CountItemInBags(itemID)
+	local itemCount, slotArray = self:GetNumItems(itemID)
 	if itemCount < count and linkForPrint then
 		CloseTrade() 
 		return SendChatMessage(L["I can't complete the trade right now. I'm out of"]..' '..linkForPrint..'.')
@@ -212,7 +212,7 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 	whisperMode = false -- Turn off the whisper mode after each trade
 end
 
-function Caterer:CountItemInBags(itemID)
+function Caterer:GetNumItems(itemID)
 	local stackSize = 20
 	local totalCount = 0
 	local slotArray = {}
@@ -222,7 +222,7 @@ function Caterer:CountItemInBags(itemID)
 		if size > 0 then
 			for slot = size, 1, -1 do
 				local itemLink = GetContainerItemLink(bag, slot)
-				local slotID = self:ExtractItemID(itemLink)
+				local slotID = self:GetItemID(itemLink)
 				if slotID == itemID then
 					linkForPrint = itemLink
 					local _, itemCount = GetContainerItemInfo(bag, slot)
@@ -238,7 +238,7 @@ function Caterer:CountItemInBags(itemID)
 	return totalCount, slotArray
 end
 
-function Caterer:ExtractItemID(link)
+function Caterer:GetItemID(link)
 	if not link then return end
 	
 	local _, _, itemID = string.find(link, 'item:(%d+):.*')
