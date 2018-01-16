@@ -1,6 +1,6 @@
 --[[---------------------------------------------------------------------------------
 	Caterer
-	written by Pik/Silvermoon (YES, I KNOW WHAT IT MEANS IN DUTCH), 
+	written by Pik/Silvermoon (original author), continued Lichery 
 	code based on FreeRefills code by Kyahx with a shout out to Maia.
 	inspired by Arcanum, Trade Dispenser, Vending Machine.
 ------------------------------------------------------------------------------------]]
@@ -68,7 +68,6 @@ function Caterer:OnInitialize()
 		self:ToggleActive(true)
 		ChatFrame1:AddMessage('Caterer '..GetAddOnMetadata('Caterer', 'Version')..' '..L["loaded."], 0, 191, 255)
 	end
-	--self:PrintTab(self:Caterer_options())
 end
 
 function Caterer:OnEnable()
@@ -116,20 +115,19 @@ function Caterer:CHAT_MSG_WHISPER(arg1, arg2)
 	-- arg1 - Message received
 	-- arg2 - Author
 	whisperCount = {}
-	local _, _, prefix, foodCount, waterCount = string.find(arg1, '(.+) (.+) (.+)')
+	local _, _, prefix, foodCount, waterCount = string.find(arg1, '(#cat) (.+) (.+)')
 	foodCount = tonumber(foodCount)
 	waterCount = tonumber(waterCount)
-	if not prefix or prefix ~= '#cat' then return end
-	if not self.db.profile.whisperRequest and prefix then
+	if not prefix then
+		return
+	elseif not self.db.profile.whisperRequest then
 		return SendChatMessage('[Caterer] '..L["Service is temporarily disabled."], 'WHISPER', nil, arg2)
-	end
-	
-	if type(foodCount) ~= 'number' or type(waterCount) ~= 'number' or math.mod(foodCount, 20) ~= 0 or math.mod(waterCount, 20) ~= 0 then
+	elseif type(foodCount) ~= 'number' or type(waterCount) ~= 'number' or math.mod(foodCount, 20) ~= 0 or math.mod(waterCount, 20) ~= 0 then
 		return SendChatMessage(string.format('[Caterer] '..L["Expected string: '<%s> <%s> <%s>'. Note: the number must be a multiple of 20."], '#cat', L["amount of food"], L["amount of water"]), 'WHISPER', nil, arg2)
 	elseif foodCount + waterCount > 120 then
 		return SendChatMessage('[Caterer] '..L["The total number of items should not exceed 120."], 'WHISPER', nil, arg2)
-	elseif foodCount == 0 and waterCount == 0 then
-		return
+	elseif foodCount + waterCount == 0 then
+		return SendChatMessage('[Caterer] '..L["The quantity for both items can not be zero."], 'WHISPER', nil, arg2)
 	end
 	
 	TargetByName(arg2, true)
