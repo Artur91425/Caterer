@@ -56,6 +56,10 @@ L:RegisterTranslations('enUS', function() return {
 	["The list has been successfully cleared."] = true,
 	["Whisper requests"] = true,
 	["Toggle whisper requests."] = true,
+	["Reset"] = true,
+	["Reset all settings."] = true,
+	["Do you really want to reset the settings to their default values?"] = true,
+	["All settings are reset to default value."] = true,
 	
 	--Errors
 	["Service is temporarily disabled."] = true,

@@ -56,6 +56,10 @@ L:RegisterTranslations('ruRU', function() return {
 	["The list has been successfully cleared."] = "Список был успешно очищен.",
 	["Whisper requests"] = "Запросы шепотом",
 	["Toggle whisper requests."] = "Вкл./Выкл. запросы шепотом.",
+	["Reset"] = "Сброс",
+	["Reset all settings."] = "Сброс всех настроек.",
+	["Do you really want to reset the settings to their default values?"] = "Вы действительно хотите сбросить настройки до значений по умолчанию?",
+	["All settings are reset to default value."] = "Все настройки сброшены до значения по умолчанию.",
 	
 	--Errors
 	["Service is temporarily disabled."] = "Сервис временно отключен.",

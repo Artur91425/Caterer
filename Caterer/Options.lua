@@ -315,8 +315,29 @@ Caterer.options = {
 			desc = L["Toggle whisper requests."],
 			get = function() return Caterer.db.profile.whisperRequest end,
 			set = function(v) Caterer.db.profile.whisperRequest = v end,
-		}
+		},
+		resetdb = {
+			order = 5,
+			type = 'execute',
+			name = L["Reset"],
+			desc = L["Reset all settings."],
+			func = function() StaticPopup_Show('CATERER_CONFIRM_RESET') end,
+		},
 	}
+}
+
+StaticPopupDialogs['CATERER_CONFIRM_RESET'] = {
+	text = L["Do you really want to reset the settings to their default values?"],
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		Caterer:ResetDB('profile')
+		Caterer:Print(L["All settings are reset to default value."])
+	end,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = false,
+	preferredIndex = 3
 }
 
 function Caterer:AddPlayer(str)
