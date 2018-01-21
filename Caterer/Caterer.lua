@@ -12,6 +12,7 @@ Caterer = AceLibrary('AceAddon-2.0'):new('AceConsole-2.0', 'AceEvent-2.0', 'AceD
 ------------------------------------------------------------------------------------]]
 
 local L = AceLibrary('AceLocale-2.2'):new('Caterer')
+local version = GetAddOnMetadata('Caterer', 'Version')
 local target, linkForPrint, whisperMode, whisperCount
 local stackSize = 20
 local defaults = {
@@ -53,7 +54,7 @@ function Caterer:OnInitialize()
 		button1 = DISABLE,
 		OnAccept = function()
 			self:ToggleActive(false)
-			FuBarPluginCatererFrameMinimapButton:Hide()
+			getglobal('FuBarPluginCaterer '..version..'FrameMinimapButton'):Hide()
 		end,
 		timeout = 0,
 		showAlert = 1,
@@ -67,7 +68,7 @@ function Caterer:OnInitialize()
 		StaticPopup_Show('CATERER_NOT_MAGE')
 	else
 		self:ToggleActive(true)
-		ChatFrame1:AddMessage('Caterer '..GetAddOnMetadata('Caterer', 'Version')..' '..L["loaded."], 0, 191, 255)
+		ChatFrame1:AddMessage('Caterer '..version..' '..L["loaded."], 0, 191, 255)
 	end
 end
 
@@ -88,10 +89,8 @@ function Caterer:TRADE_SHOW()
 	if not performTrade then return end
 	local _, tradeClass = UnitClass('NPC')
 	if tradeClass == 'MAGE' then
-		TargetByName(UnitName('NPC'), true)
-		target = UnitName('target')
-		CloseTrade() 
-		return SendChatMessage('[Caterer] '..L["Make yourself your own water."]..' :)', 'WHISPER', nil, target)
+		SendChatMessage('[Caterer] '..L["Make yourself your own water."]..' :)', 'WHISPER', nil, UnitName('NPC'))
+		return CloseTrade()
 	end
 	
 	local count
