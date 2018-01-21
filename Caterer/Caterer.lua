@@ -87,7 +87,12 @@ function Caterer:TRADE_SHOW()
 	local performTrade = self:CheckTheTrade()
 	if not performTrade then return end
 	local _, tradeClass = UnitClass('NPC')
-	if tradeClass == 'MAGE' then return end
+	if tradeClass == 'MAGE' then
+		TargetByName(UnitName('NPC'), true)
+		target = UnitName('target')
+		CloseTrade() 
+		return SendChatMessage('[Caterer] '..L["Make yourself your own water."]..' :)', 'WHISPER', nil, target)
+	end
 	
 	local count
 	local item = self.db.profile.tradeWhat

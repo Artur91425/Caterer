@@ -4,6 +4,15 @@ L:RegisterTranslations('ruRU', function() return {
 	
 	["Attention! Addon %s is not designed for your class. It must be disabled."] = "Внимание! Аддон %s не предназначен для вашего класса. Он должен быть отключен.",
 	["loaded."] = "загружен.",
+	["LeftClick to disable addon."] = "Нажмите левую кнопку мыши, чтобы отключить аддон.",
+	["Trade with friends"] = "Обмен с друзьями",
+	["Trade with group"] = "Обмен с членами группы/рейда",
+	["Trade with guild"] = "Обмен с членами гильдии",
+	["Trade with other"] = "Обмен с другими",
+	["Class"] = "Класс",
+	["nil"] = "нет",
+	["On"] = "Вкл.",
+	["Off"] = "Выкл.",
 	
 	--Food
 	["Conjured Cinnamon Roll"] = "Сотворенная плюшка с корицей",
@@ -62,6 +71,7 @@ L:RegisterTranslations('ruRU', function() return {
 	["All settings are reset to default value."] = "Все настройки сброшены до значения по умолчанию.",
 	
 	--Errors
+	["Make yourself your own water."] = "Сделайте себе собственную воду.",
 	["Service is temporarily disabled."] = "Сервис временно отключен.",
 	["The total number of items should not exceed 120."] = "Общее количество предметов не должно превышать 120.",
 	["The quantity for both items can not be zero."] = "Количество для обоих предметов не может быть равно нулю.",

@@ -1,4 +1,12 @@
 --------------------------------------------------------------------------------
+21 Jan 2018 - v 0.3.5 (Lichery)
+--------------------------------------------------------------------------------
++ Added support Shaman.
++ Added ignoring Mage for trades.
++ Added current settings on tooltip minimap button.
++ Added disabling addon by Left Click on the minimap button.
+
+--------------------------------------------------------------------------------
 27 Dec 2017 - v 0.3.4 (Lichery)
 --------------------------------------------------------------------------------
 + Added filter to trade with defined individuals.

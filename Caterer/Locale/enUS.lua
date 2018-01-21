@@ -4,6 +4,15 @@ L:RegisterTranslations('enUS', function() return {
 	
 	["Attention! Addon %s is not designed for your class. It must be disabled."] = true,
 	["loaded."] = true,
+	["LeftClick to disable addon."] = true,
+	["Trade with friends"] = true,
+	["Trade with group"] = "Trade with group/raid members",
+	["Trade with guild"] = "Trade with guild members",
+	["Trade with other"] = true,
+	["Class"] = true,
+	["nil"] = true,
+	["On"] = true,
+	["Off"] = true,
 	
 	--Food
 	["Conjured Cinnamon Roll"] = true,
@@ -62,6 +71,7 @@ L:RegisterTranslations('enUS', function() return {
 	["All settings are reset to default value."] = true,
 	
 	--Errors
+	["Make yourself your own water."] = true,
 	["Service is temporarily disabled."] = true,
 	["The total number of items should not exceed 120."] = true,
 	["The quantity for both items can not be zero."] = true,
