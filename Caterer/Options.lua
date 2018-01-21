@@ -150,6 +150,31 @@ Caterer.options = {
 								}
 							}
 						},
+						shaman = {
+							type = 'group',
+							name = BC["Shaman"],
+							desc = L["Set items quantity."],
+							args = { 
+								food = {
+									order = 1,
+									type = 'text',
+									name = L["Food"],
+									desc = L["Set quantity for food."],
+									get = function() return Caterer.db.profile.tradeCount.SHAMAN[1] end,
+									set = function(v) Caterer.db.profile.tradeCount.SHAMAN[1] = v end,
+									validate = {'0', '20', '40', '60'}
+								},
+								water = {
+									order = 2,
+									type = 'text',
+									name = L["Water"],
+									desc = L["Set quantity for water."],
+									get = function() return Caterer.db.profile.tradeCount.SHAMAN[2] end,
+									set = function(v) Caterer.db.profile.tradeCount.SHAMAN[2] = v end,
+									validate = {'0', '20', '40', '60'}
+								}
+							}
+						},
 						warlock = {
 							type = 'group',
 							name = BC["Warlock"],

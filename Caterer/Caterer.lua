@@ -25,6 +25,7 @@ local defaults = {
 		['PALADIN'] = {'40', '40'},
 		['PRIEST']  = {'0' , '60'},
 		['ROGUE']   = {'60', nil },
+		['SHAMAN']  = {'0' , '60'},
 		['WARLOCK'] = {'60', '40'},
 		['WARRIOR'] = {'60', nil }
 	},
