@@ -86,9 +86,10 @@ function Caterer:TRADE_SHOW()
 	if self:IsEventRegistered('UI_ERROR_MESSAGE') then self:UnregisterEvent('UI_ERROR_MESSAGE') end
 	local performTrade = self:CheckTheTrade()
 	if not performTrade then return end
+	local _, tradeClass = UnitClass('NPC')
+	if tradeClass == 'MAGE' then return end
 	
 	local count
-	local _, tradeClass = UnitClass('NPC')
 	local item = self.db.profile.tradeWhat
 	if whisperMode then
 		count = whisperCount
