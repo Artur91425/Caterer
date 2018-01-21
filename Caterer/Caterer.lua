@@ -5,7 +5,7 @@
 	inspired by Arcanum, Trade Dispenser, Vending Machine.
 ------------------------------------------------------------------------------------]]
 
-Caterer = AceLibrary('AceAddon-2.0'):new('AceConsole-2.0', 'AceEvent-2.0', 'AceDB-2.0', 'AceDebug-2.0')
+Caterer = AceLibrary('AceAddon-2.0'):new('AceConsole-2.0', 'AceEvent-2.0', 'AceDB-2.0')
 
 --[[---------------------------------------------------------------------------------
 	Locals
@@ -13,6 +13,7 @@ Caterer = AceLibrary('AceAddon-2.0'):new('AceConsole-2.0', 'AceEvent-2.0', 'AceD
 
 local L = AceLibrary('AceLocale-2.2'):new('Caterer')
 local target, linkForPrint, whisperMode, whisperCount
+local stackSize = 20
 local defaults = {
 	exceptionList = {},
 	whisperRequest = false,
@@ -28,10 +29,10 @@ local defaults = {
 		['WARRIOR'] = {'60', nil }
 	},
 	tradeFilter = {
-		anyone = false,
-		raid = true,
+		friends = true,
+		group = true,
 		guild = true,
-		friend = true
+		other = false
 	}
 }
 
@@ -120,7 +121,7 @@ function Caterer:CHAT_MSG_WHISPER(arg1, arg2)
 	waterCount = tonumber(waterCount)
 	if not self.db.profile.whisperRequest then
 		return SendChatMessage('[Caterer] '..L["Service is temporarily disabled."], 'WHISPER', nil, arg2)
-	elseif type(foodCount) ~= 'number' or type(waterCount) ~= 'number' or math.mod(foodCount, 20) ~= 0 or math.mod(waterCount, 20) ~= 0 then
+	elseif not (foodCount or waterCount) or math.mod(foodCount, 20) ~= 0 or math.mod(waterCount, 20) ~= 0 then
 		return SendChatMessage(string.format('[Caterer] '..L["Expected string: '<%s> <%s> <%s>'. Note: the number must be a multiple of 20."], '#cat', L["amount of food"], L["amount of water"]), 'WHISPER', nil, arg2)
 	elseif foodCount + waterCount > 120 then
 		return SendChatMessage('[Caterer] '..L["The total number of items should not exceed 120."], 'WHISPER', nil, arg2)
@@ -153,12 +154,12 @@ end
 -----------------------------------------------------------------------------------]]
 
 function Caterer:CheckTheTrade()
-	--Check to see whether or not we should execute the trade.
+	-- Check to see whether or not we should execute the trade.
 	local doTrade = false
 	
-	if self.db.profile.tradeFilter.anyone then
+	if self.db.profile.tradeFilter.other then
 		doTrade = true
-	elseif self.db.profile.tradeFilter.raid then
+	elseif self.db.profile.tradeFilter.group then
 		if UnitInParty('NPC') or UnitInRaid('NPC') then
 			doTrade = true
 		end
@@ -166,7 +167,7 @@ function Caterer:CheckTheTrade()
 		if GetGuildInfo('NPC') == GetGuildInfo('player') then
 			doTrade = true
 		end
-	elseif self.db.profile.tradeFilter.friend then
+	elseif self.db.profile.tradeFilter.friends then
 		for i = 1, GetNumFriends() do
 			if UnitName('NPC') == GetFriendInfo(i) then
 				doTrade = true
@@ -201,16 +202,13 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 		end
 	end
 	
-	local stack = 20
-	
-	for k in pairs(slotArray) do
-		local _, _, bag, slot = string.find(slotArray[k], 'bag: (%d+), slot: (%d+)')
-		self:Debug(slotArray[k])
+	for _, v in pairs(slotArray) do
+		local _, _, bag, slot = string.find(v, 'bag: (%d), slot: (%d+)')
 		PickupContainerItem(bag, slot)
 		if CursorHasItem then
 			local slot = TradeFrame_GetAvailableSlot() -- Blizzard function
 			ClickTradeButton(slot)
-			count = count - stack
+			count = count - stackSize
 		else
 			return self:Print('|cffff9966'..L["Had a problem picking things up!"]..'|r')
 		end
@@ -220,20 +218,19 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 end
 
 function Caterer:GetNumItems(itemID)
-	local stackSize = 20
 	local totalCount = 0
 	local slotArray = {}
 	
 	for bag = 4, 0, -1 do
 		local size = GetContainerNumSlots(bag)
-		if size > 0 then
+		if size then
 			for slot = size, 1, -1 do
 				local itemLink = GetContainerItemLink(bag, slot)
 				local slotID = self:GetItemID(itemLink)
 				if slotID == itemID then
 					linkForPrint = itemLink
 					local _, itemCount = GetContainerItemInfo(bag, slot)
-					if tonumber(itemCount) == stackSize then
+					if itemCount == stackSize then
 						totalCount = totalCount + itemCount
 						table.insert(slotArray, 'bag: '..bag..', slot: '..slot)
 					end
@@ -241,7 +238,6 @@ function Caterer:GetNumItems(itemID)
 			end
 		end
 	end
-	self:Debug(totalCount)
 	return totalCount, slotArray
 end
 

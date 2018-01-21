@@ -204,16 +204,16 @@ Caterer.options = {
 							type = 'toggle',
 							name = L["Friends"],
 							desc = L["Toggle trade with friends."],
-							get = function() return Caterer.db.profile.tradeFilter.friend end,
-							set = function(v) Caterer.db.profile.tradeFilter.friend = v end,
+							get = function() return Caterer.db.profile.tradeFilter.friends end,
+							set = function(v) Caterer.db.profile.tradeFilter.friends = v end,
 						},
 						group = {
 							order = 2,
 							type = 'toggle',
 							name = L["Group/Raid members"],
 							desc = L["Toggle trade with group/raid members."],
-							get = function() return Caterer.db.profile.tradeFilter.raid end,
-							set = function(v) Caterer.db.profile.tradeFilter.raid = v end,
+							get = function() return Caterer.db.profile.tradeFilter.group end,
+							set = function(v) Caterer.db.profile.tradeFilter.group = v end,
 						},
 						guild = {
 							order = 3,
@@ -228,8 +228,8 @@ Caterer.options = {
 							type = 'toggle',
 							name = L["Other"],
 							desc = L["Toggle trade with other players."],
-							get = function() return Caterer.db.profile.tradeFilter.anyone end,
-							set = function(v) Caterer.db.profile.tradeFilter.anyone = v end,
+							get = function() return Caterer.db.profile.tradeFilter.other end,
+							set = function(v) Caterer.db.profile.tradeFilter.other = v end,
 						}
 					}
 				},
@@ -242,8 +242,8 @@ Caterer.options = {
 						add = {
 							order = 1,
 							type = 'text',
-							name = L["Add"],
-							desc = string.format(L["Add a player to the exclusion list.\n\nUsage: <%s> <%s> <%s>"], L["player name"], L["amount of food"], L["amount of water"]),
+							name = L["Add/Edit"],
+							desc = string.format(L["Add/Edit a player to the exclusion list.\n\nUsage: <%s> <%s> <%s>"], L["player name"], L["amount of food"], L["amount of water"]),
 							usage = '<'..L["player name"]..'> <'..L["amount of food"]..'> <'..L["amount of water"]..'>',
 							get = false,
 							set = function(str) Caterer:AddPlayer(str) end,
@@ -295,8 +295,8 @@ Caterer.options = {
 }
 
 function Caterer:AddPlayer(str)
-	local _, _, playerName, food, water = string.find(str, '(.+) (%d+) (%d+)')
-	if not food or not water or math.mod(food, 20) ~= 0 or math.mod(water, 20) ~= 0 then
+	local _, _, name, food, water = string.find(str, '(.+) (%d+) (%d+)')
+	if not (food or water) or math.mod(food, 20) ~= 0 or math.mod(water, 20) ~= 0 then
 		return self:Print(string.format(L["Expected string: '<%s> <%s> <%s>'. Note: the number must be a multiple of 20."], L["player name"], L["amount of food"], L["amount of water"]))
 	elseif food + water > 120 then
 		return self:Print(L["The total number of items should not exceed 120."])
@@ -305,15 +305,15 @@ function Caterer:AddPlayer(str)
 	end
 	
 	local type
-	if self.db.profile.exceptionList[playerName] then
+	if self.db.profile.exceptionList[name] then
 		type = '|cffDAA520'..L["edited"]..'|r'
 	else
 		type = '|cff00FF00'..L["added"]..'|r'
 	end
-	self.db.profile.exceptionList[playerName] = {}
-	table.insert(self.db.profile.exceptionList[playerName], food)
-	table.insert(self.db.profile.exceptionList[playerName], water)
-	self:Print(L["Player"]..' <|cffbfffff'..playerName..'|r> '..string.format(L["was successfully %s."], type))
+	self.db.profile.exceptionList[name] = {}
+	table.insert(self.db.profile.exceptionList[name], food)
+	table.insert(self.db.profile.exceptionList[name], water)
+	self:Print(string.format(L["%s was successfully %s."], L["Player"]..' <|cffbfffff'..name..'|r> ', type))
 end
 
 function Caterer:RemovePlayer(name)
@@ -322,7 +322,7 @@ function Caterer:RemovePlayer(name)
 	end
 	
 	self.db.profile.exceptionList[name] = nil
-	self:Print(L["Player"]..' <|cffbfffff'..name..'|r> '..string.format(L["was successfully %s."], '|cffFF0000'..L["removed"]..'|r'))
+	self:Print(string.format(L["%s was successfully %s."], L["Player"]..' <|cffbfffff'..name..'|r> ', '|cffFF0000'..L["removed"]..'|r'))
 end
 
 function Caterer:PrintList()
