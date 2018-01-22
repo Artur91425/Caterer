@@ -13,7 +13,6 @@ Caterer = AceLibrary('AceAddon-2.0'):new('AceConsole-2.0', 'AceEvent-2.0', 'AceD
 
 local L = AceLibrary('AceLocale-2.2'):new('Caterer')
 local target, linkForPrint, whisperMode, whisperCount
-local stackSize = 20
 local defaults = {
 	exceptionList = {},
 	whisperRequest = false,
@@ -57,7 +56,8 @@ function Caterer:OnInitialize()
 		button1 = DISABLE,
 		OnAccept = function()
 			self:ToggleActive(false)
-			FuBarPluginCatererFrameMinimapButton:Hide()
+			local frame = FuBarPluginCatererFrameMinimapButton or FuBarPluginCatererFrame
+			if frame then frame:Hide() end
 		end,
 		timeout = 0,
 		showAlert = 1,
@@ -216,18 +216,21 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 			return SendChatMessage(string.format(L["Trade is impossible, no %s."], linkForPrint))
 		end
 	end
-	
+
+	local stackSize = 20
 	for _, v in pairs(slotArray) do
-		local _, _, bag, slot = string.find(v, 'bag: (%d), slot: (%d+)')
-		PickupContainerItem(bag, slot)
-		if CursorHasItem then
-			local slot = TradeFrame_GetAvailableSlot() -- Blizzard function
-			ClickTradeButton(slot)
-			count = count - stackSize
-		else
-			return self:Print('|cffff9966'..L["Had a problem picking things up!"]..'|r')
+		local _, _, bag, slot, slotCount = string.find(v, 'bag: (%d), slot: (%d+), count: (%d+)')
+		if tonumber(slotCount) == stackSize then
+			PickupContainerItem(bag, slot)
+			if CursorHasItem then
+				local slot = TradeFrame_GetAvailableSlot() -- Blizzard function
+				ClickTradeButton(slot)
+				count = count - stackSize
+			else
+				return self:Print('|cffff9966'..L["Had a problem picking things up!"]..'|r')
+			end
+			if count == 0 then break end
 		end
-		if count == 0 then break end
 	end
 	if whisperMode then whisperMode = false end
 end
@@ -241,13 +244,13 @@ function Caterer:GetNumItems(itemID)
 		if size then
 			for slot = size, 1, -1 do
 				local itemLink = GetContainerItemLink(bag, slot)
-				local slotID = self:GetItemID(itemLink)
-				if slotID == itemID then
-					linkForPrint = itemLink
-					local _, itemCount = GetContainerItemInfo(bag, slot)
-					if itemCount == stackSize then
+				if itemLink then
+					local slotID = self:GetItemID(itemLink)
+					if slotID == tonumber(itemID) then
+						linkForPrint = itemLink
+						local _, itemCount = GetContainerItemInfo(bag, slot)
 						totalCount = totalCount + itemCount
-						table.insert(slotArray, 'bag: '..bag..', slot: '..slot)
+						table.insert(slotArray, 'bag: '..bag..', slot: '..slot..', count: '..itemCount)
 					end
 				end
 			end

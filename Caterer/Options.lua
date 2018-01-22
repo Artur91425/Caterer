@@ -412,97 +412,9 @@ function Caterer:PrintList()
 		return self:Print(L["The list is empty."])
 	end
 	
-	self:Print(L["List of exceptions"]..":")
+	self:Print(L["List of exceptions"]..':')
 	ChatFrame1:AddMessage(string.format('[|cffbfffff%s|r] = {%s, %s}', L["player name"], L["Food"], L["Water"]))
 	for k, v in pairs(self.db.profile.exceptionList) do
 		ChatFrame1:AddMessage('[|cffbfffff'..k..'|r] = {'..v[1]..', '..v[2]..'}')
-	end
-end
-
---[[---------------------------------------------------------------------------------
-	FuBar Plugin
-------------------------------------------------------------------------------------]]
-
-local Tablet = AceLibrary('Tablet-2.0')
-
-CatererFu = AceLibrary('AceAddon-2.0'):new('AceDB-2.0', 'FuBarPlugin-2.0')
-CatererFu:RegisterDB('CatererDB')
-	
-CatererFu.title = 'Caterer '..GetAddOnMetadata('Caterer', 'Version')
-CatererFu.hasIcon = 'Interface\\Icons\\Inv_drink_18'
-CatererFu.defaultMinimapPosition = 180
-CatererFu.hideWithoutStandby = true
-CatererFu.clickableTooltip = true
-CatererFu.cannotHideIcon = true
-CatererFu.hasNoColor = true
-
-CatererFu.OnMenuRequest = Caterer.options
-local args = AceLibrary('FuBarPlugin-2.0'):GetAceOptionsDataTable(CatererFu)
-for k, v in pairs(args) do
-	if not CatererFu.OnMenuRequest.args[k] then
-		CatererFu.OnMenuRequest.args[k] = v
-	end
-end
-
--- fix Shaman class color
-RAID_CLASS_COLORS['SHAMAN'].r = 0.0
-RAID_CLASS_COLORS['SHAMAN'].g = 0.44
-RAID_CLASS_COLORS['SHAMAN'].b = 0.87
-
-function CatererFu:OnTooltipUpdate()
-	Tablet:SetTitle(CatererFu.title)
-	Tablet:SetTitleColor(0.41, 0.80, 0.94)
-	if Caterer.db.profile.tooltip.classes then
-		local cat1 = Tablet:AddCategory('columns', 3, 'text', ' ')
-			cat1:AddLine('text', L["Class"], 'text2', L["Food"], 'text3', L["Water"], 'justify3', 'CENTER')
-		for class, v in pairs(Caterer.db.profile.tradeCount) do
-			local name = Caterer.options.args.filter.args.quantity.args[string.lower(class)].name
-			cat1:AddLine('text', name..':', 'textR', RAID_CLASS_COLORS[class].r, 'textG', RAID_CLASS_COLORS[class].g, 'textB',  RAID_CLASS_COLORS[class].b, 'text2', v[1], 'text3', v[2] or L["nil"], 'justify3', 'CENTER')
-		end
-	end
-	local cat2 = Tablet:AddCategory('columns', 2)
-	for k, v in pairs(Caterer.db.profile.tradeFilter) do
-		cat2:AddLine('text', L["Trade with"..' '..k]..':', 'text2', self:GetStatus(v), "func", self.ToggleOptions, "arg1", self, "arg2", 'tradeFilter', "arg3", k)
-	end
-	local cat3 = Tablet:AddCategory('columns', 2)
-	cat3:AddLine('text', L["Whisper requests"]..':', 'text2', self:GetStatus(Caterer.db.profile.whisperRequest), "func", self.ToggleOptions, "arg1", self, "arg2", 'whisperRequest')
-	if Caterer.db.profile.tooltip.exceptionList and next(Caterer.db.profile.exceptionList) then
-		local cat4 = Tablet:AddCategory('columns', 3, 'text', L["List of exceptions"]..":", 'font', GameTooltipHeaderText, 'textR', 1, 'textG', 0.823529, 'textB', 0)
-		cat4:AddLine('text', L["Player"], 'text2', L["Food"], 'text3', L["Water"], 'justify3', 'CENTER')
-		for k, v in pairs(Caterer.db.profile.exceptionList) do
-			cat4:AddLine('text', '|cffbfffff'..k..'|r', 'text2', v[1], 'text3', v[2], 'justify3', 'CENTER', "func", Caterer.RemovePlayer, "arg1", Caterer, "arg2", k)
-		end
-	end
-	Tablet:SetHint('\n'..L["LeftClick to toggle addon.\nRightClick to open dropdown menu.\nLeftClick on the point tooltip to quickly manage the addon."])
-end
-
-function CatererFu:OnClick()
-	if Caterer:IsActive() then
-		Caterer:ToggleActive(false)
-		getglobal(this:GetName()..'Icon'):SetVertexColor(0.3, 0.3, 0.3)
-	else
-		Caterer:ToggleActive(true)
-		getglobal(this:GetName()..'Icon'):SetVertexColor(1, 1, 1)
-    end
-end
-
-function CatererFu:GetStatus(value)
-	if value then
-		return '|CFF00FF00'..L["On"]..'|r'
-	else
-		return '|CFFFF0000'..L["Off"]..'|r'
-	end
-end
-
-function CatererFu:ToggleOptions(table, key)
-	local value
-	if table == 'tradeFilter' then
-		value = Caterer.db.profile[table][key]
-		Caterer.db.profile[table][key] = not value
-		return Caterer.db.profile[table][key]
-	elseif table == 'whisperRequest' then
-		value = Caterer.db.profile[table]
-		Caterer.db.profile[table] = not value
-		return Caterer.db.profile[table]
 	end
 end

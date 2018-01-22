@@ -19,3 +19,4 @@ Locale\ruRU.lua
 
 Caterer.lua
 Options.lua
+CatererFu.lua
