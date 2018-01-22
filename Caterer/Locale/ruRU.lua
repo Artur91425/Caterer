@@ -64,6 +64,7 @@ L:RegisterTranslations('ruRU', function() return {
 	["The list is empty."] = "Список пуст.",
 	["Clear"] = "Очистить",
 	["Completely clears the entire list."] = "Полностью очищает список исключений.",
+	["Do you really want to clear list of exceptions?"] = "Вы действительно хотите очистить список исключений?",
 	["The list has been successfully cleared."] = "Список был успешно очищен.",
 	["Adds the list of exceptions to the tooltip."] = "Добавляет список исключений в подсказку.",
 	["Whisper requests"] = "Запросы шепотом",

@@ -36,7 +36,7 @@ local defaults = {
 		other = false
 	},
 	tooltip = {
-		classes = true,
+		classes = false,
 		exceptionList = false
 	}
 }
@@ -164,27 +164,33 @@ end
 
 function Caterer:CheckTheTrade()
 	-- Check to see whether or not we should execute the trade.
-	local doTrade = false
+	local NPCInGroup, NPCInMyGuild, NPCInFriendList
 	
-	if self.db.profile.tradeFilter.other then
-		doTrade = true
-	elseif self.db.profile.tradeFilter.group then
-		if UnitInParty('NPC') or UnitInRaid('NPC') then
-			doTrade = true
-		end
-	elseif self.db.profile.tradeFilter.guild then
-		if GetGuildInfo('NPC') == GetGuildInfo('player') then
-			doTrade = true
-		end
-	elseif self.db.profile.tradeFilter.friends then
-		for i = 1, GetNumFriends() do
-			if UnitName('NPC') == GetFriendInfo(i) then
-				doTrade = true
-			end
+	if UnitInParty('NPC') or UnitInRaid('NPC') then
+		NPCInGroup = true
+	end
+	if IsInGuild() and GetGuildInfo('player') == GetGuildInfo('NPC') then
+		NPCInMyGuild = true
+	end
+	for i = 1, GetNumFriends() do
+		if UnitName('NPC') == GetFriendInfo(i) then
+			NPCInFriendList = true
 		end
 	end
 	
-	return doTrade
+	if self.db.profile.tradeFilter.group and NPCInGroup then
+		return true
+	elseif self.db.profile.tradeFilter.guild and NPCInGuild then
+		return true
+	elseif self.db.profile.tradeFilter.friends and NPCInFriendList then
+		return true
+	elseif self.db.profile.tradeFilter.other then
+		if NPCInGroup or NPCInMyGuild or NPCInFriendList then
+			return false
+		else
+			return true
+		end
+	end
 end
 
 function Caterer:DoTheTrade(itemID, count, itemType)
@@ -253,6 +259,6 @@ end
 function Caterer:GetItemID(link)
 	if not link then return end
 	
-	local _, _, itemID = string.find(link, 'item:(%d+):.*')
+	local _, _, itemID = string.find(link, 'item:(%d+):')
 	return tonumber(itemID)
 end

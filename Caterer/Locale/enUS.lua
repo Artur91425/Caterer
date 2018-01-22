@@ -64,6 +64,7 @@ L:RegisterTranslations('enUS', function() return {
 	["The list is empty."] = true,
 	["Clear"] = true,
 	["Completely clears the entire list."] = true,
+	["Do you really want to clear list of exceptions?"] = true,
 	["The list has been successfully cleared."] = true,
 	["Adds the list of exceptions to the tooltip."] = true,
 	["Whisper requests"] = true,

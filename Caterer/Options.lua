@@ -313,8 +313,8 @@ Caterer.options = {
 							name = L["Clear"],
 							desc = L["Completely clears the entire list."],
 							func = function()
-								Caterer.db.profile.exceptionList = {}
-								Caterer:Print(L["The list has been successfully cleared."])
+								Dewdrop20Level3:Hide() -- hide, so as not to interfere
+								StaticPopup_Show('CATERER_CONFIRM_CLEAR')
 							end,
 						},
 						tooltip = {
@@ -347,6 +347,20 @@ Caterer.options = {
 	}
 }
 
+StaticPopupDialogs['CATERER_CONFIRM_CLEAR'] = {
+	text = L["Do you really want to clear list of exceptions?"],
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		Caterer.db.profile.exceptionList = {}
+		Caterer:Print(L["The list has been successfully cleared."])
+	end,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = false,
+	preferredIndex = 3
+}
+
 StaticPopupDialogs['CATERER_CONFIRM_RESET'] = {
 	text = L["Do you really want to reset the settings to their default values?"],
 	button1 = YES,
@@ -363,8 +377,8 @@ StaticPopupDialogs['CATERER_CONFIRM_RESET'] = {
 }
 
 function Caterer:AddPlayer(str)
-	local _, _, name, food, water = string.find(str, '(.+) (%d+) (%d+)')
-	if not (food or water) or math.mod(food, 20) ~= 0 or math.mod(water, 20) ~= 0 then
+	local _, _, name, food, water = string.find(str, '(%a+) (%d+) (%d+)')
+	if not (name or food or water) or math.mod(food, 20) ~= 0 or math.mod(water, 20) ~= 0 then
 		return self:Print(string.format(L["Expected string: '<%s> <%s> <%s>'. Note: the number must be a multiple of 20."], L["player name"], L["amount of food"], L["amount of water"]))
 	elseif food + water > 120 then
 		return self:Print(L["The total number of items should not exceed 120."])
@@ -441,7 +455,7 @@ function Caterer:OnTooltipUpdate()
 		local cat1 = Tablet:AddCategory('columns', 3, 'text', ' ')
 			cat1:AddLine('text', L["Class"], 'text2', L["Food"], 'text3', L["Water"], 'justify3', 'CENTER')
 		for class, v in pairs(self.db.profile.tradeCount) do
-			local name = Caterer.options.args.filter.args.quantity.args[string.lower(class)].name
+			local name = self.options.args.filter.args.quantity.args[string.lower(class)].name
 			cat1:AddLine('text', name..':', 'textR', RAID_CLASS_COLORS[class].r, 'textG', RAID_CLASS_COLORS[class].g, 'textB',  RAID_CLASS_COLORS[class].b, 'text2', v[1], 'text3', v[2] or L["nil"], 'justify3', 'CENTER')
 		end
 	end
@@ -455,18 +469,18 @@ function Caterer:OnTooltipUpdate()
 		local cat4 = Tablet:AddCategory('columns', 3, 'text', L["List of exceptions"]..":", 'font', GameTooltipHeaderText, 'textR', 1, 'textG', 0.823529, 'textB', 0)
 		cat4:AddLine('text', L["Player"], 'text2', L["Food"], 'text3', L["Water"], 'justify3', 'CENTER')
 		for k, v in pairs(self.db.profile.exceptionList) do
-			cat4:AddLine('text', '|cffbfffff'..k..'|r', 'text2', v[1], 'text3', v[2], 'justify3', 'CENTER', "func", Caterer.RemovePlayer, "arg1", Caterer, "arg2", k)
+			cat4:AddLine('text', '|cffbfffff'..k..'|r', 'text2', v[1], 'text3', v[2], 'justify3', 'CENTER', "func", self.RemovePlayer, "arg1", self, "arg2", k)
 		end
 	end
 	Tablet:SetHint('\n'..L["LeftClick on minimap icon to disable addon.\nRightClick on minimap icon to open dropdown menu.\nLeftClick on the point tooltip to quickly manage the addon."])
 end
 
 function Caterer:OnClick()
-	if Caterer:IsActive() then
-		Caterer:ToggleActive(false)
+	if self:IsActive() then
+		self:ToggleActive(false)
 		getglobal(this:GetName()..'Icon'):SetVertexColor(0.3, 0.3, 0.3)
 	else
-		Caterer:ToggleActive(true)
+		self:ToggleActive(true)
 		getglobal(this:GetName()..'Icon'):SetVertexColor(1, 1, 1)
     end
 end
