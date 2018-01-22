@@ -215,6 +215,19 @@ Caterer.options = {
 									validate = {'0', '20', '40', '60'}
 								}
 							}
+						},
+						space1 = {
+							order = 200,
+							type = 'header',
+							name = ' ',
+						},
+						tooltip = {
+							order = 201,
+							type = 'toggle',
+							name = L["Add to tooltip"],
+							desc = L["Adds the current settings to the tooltip."],
+							get = function() return Caterer.db.profile.tooltip.classes end,
+							set = function(v) Caterer.db.profile.tooltip.classes = v end,
 						}
 					}
 				},	
@@ -289,7 +302,7 @@ Caterer.options = {
 							desc = L["Printing an exclusion list."],
 							func = function() Caterer:PrintList() end,
 						},
-						space = {
+						space2 = {
 							order = 4,
 							type = 'header',
 							name = ' ',
@@ -303,6 +316,14 @@ Caterer.options = {
 								Caterer.db.profile.exceptionList = {}
 								Caterer:Print(L["The list has been successfully cleared."])
 							end,
+						},
+						tooltip = {
+							order = 6,
+							type = 'toggle',
+							name = L["Add to tooltip"],
+							desc = L["Adds the list of exceptions to the tooltip."],
+							get = function() return Caterer.db.profile.tooltip.exceptionList end,
+							set = function(v) Caterer.db.profile.tooltip.exceptionList = v end,
 						}
 					}
 				}
@@ -322,7 +343,7 @@ Caterer.options = {
 			name = L["Reset"],
 			desc = L["Reset all settings."],
 			func = function() StaticPopup_Show('CATERER_CONFIRM_RESET') end,
-		},
+		}
 	}
 }
 
@@ -331,6 +352,7 @@ StaticPopupDialogs['CATERER_CONFIRM_RESET'] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
+		Dewdrop20Level1:Hide() -- Hide Dewdrop menu (this needs for update settings on Dewdrop menu)
 		Caterer:ResetDB('profile')
 		Caterer:Print(L["All settings are reset to default value."])
 	end,
@@ -380,5 +402,92 @@ function Caterer:PrintList()
 	ChatFrame1:AddMessage(string.format('[|cffbfffff%s|r] = {%s, %s}', L["player name"], L["Food"], L["Water"]))
 	for k, v in pairs(self.db.profile.exceptionList) do
 		ChatFrame1:AddMessage('[|cffbfffff'..k..'|r] = {'..v[1]..', '..v[2]..'}')
+	end
+end
+
+--[[---------------------------------------------------------------------------------
+	FuBar Plugin
+------------------------------------------------------------------------------------]]
+
+local Tablet = AceLibrary('Tablet-2.0')
+
+Caterer.name = 'Caterer'
+Caterer.hasNoColor = true
+Caterer.hasIcon = 'Interface\\Icons\\Inv_drink_18'
+Caterer.defaultMinimapPosition = 180
+Caterer.hideWithoutStandby = true
+Caterer.cannotDetachTooltip = true
+Caterer.cannotHideText = true
+Caterer.cannotHideIcon = true
+Caterer.clickableTooltip = true
+
+Caterer.OnMenuRequest = Caterer.options
+local args = AceLibrary('FuBarPlugin-2.0'):GetAceOptionsDataTable(Caterer)
+for k, v in pairs(args) do
+	if not Caterer.OnMenuRequest.args[k] then
+		Caterer.OnMenuRequest.args[k] = v
+	end
+end
+
+-- fix Shaman class color
+RAID_CLASS_COLORS['SHAMAN'].r = 0.0
+RAID_CLASS_COLORS['SHAMAN'].g = 0.44
+RAID_CLASS_COLORS['SHAMAN'].b = 0.87
+
+function Caterer:OnTooltipUpdate()
+	Tablet:SetTitle('Caterer '..GetAddOnMetadata('Caterer', 'Version'))
+	Tablet:SetTitleColor(0.41, 0.80, 0.94)
+	if self.db.profile.tooltip.classes then
+		local cat1 = Tablet:AddCategory('columns', 3, 'text', ' ')
+			cat1:AddLine('text', L["Class"], 'text2', L["Food"], 'text3', L["Water"], 'justify3', 'CENTER')
+		for class, v in pairs(self.db.profile.tradeCount) do
+			local name = Caterer.options.args.filter.args.quantity.args[string.lower(class)].name
+			cat1:AddLine('text', name..':', 'textR', RAID_CLASS_COLORS[class].r, 'textG', RAID_CLASS_COLORS[class].g, 'textB',  RAID_CLASS_COLORS[class].b, 'text2', v[1], 'text3', v[2] or L["nil"], 'justify3', 'CENTER')
+		end
+	end
+	local cat2 = Tablet:AddCategory('columns', 2)
+	for k, v in pairs(self.db.profile.tradeFilter) do
+		cat2:AddLine('text', L["Trade with"..' '..k]..':', 'text2', self:GetStatus(v), "func", self.ToggleOptions, "arg1", self, "arg2", 'tradeFilter', "arg3", k)
+	end
+	local cat3 = Tablet:AddCategory('columns', 2)
+	cat3:AddLine('text', L["Whisper requests"]..':', 'text2', self:GetStatus(self.db.profile.whisperRequest), "func", self.ToggleOptions, "arg1", self, "arg2", 'whisperRequest')
+	if self.db.profile.tooltip.exceptionList and next(self.db.profile.exceptionList) then
+		local cat4 = Tablet:AddCategory('columns', 3, 'text', L["List of exceptions"]..":", 'font', GameTooltipHeaderText, 'textR', 1, 'textG', 0.823529, 'textB', 0)
+		cat4:AddLine('text', L["Player"], 'text2', L["Food"], 'text3', L["Water"], 'justify3', 'CENTER')
+		for k, v in pairs(self.db.profile.exceptionList) do
+			cat4:AddLine('text', '|cffbfffff'..k..'|r', 'text2', v[1], 'text3', v[2], 'justify3', 'CENTER', "func", Caterer.RemovePlayer, "arg1", Caterer, "arg2", k)
+		end
+	end
+	Tablet:SetHint('\n'..L["LeftClick on minimap icon to disable addon.\nRightClick on minimap icon to open dropdown menu.\nLeftClick on the point tooltip to quickly manage the addon."])
+end
+
+function Caterer:OnClick()
+	if Caterer:IsActive() then
+		Caterer:ToggleActive(false)
+		getglobal(this:GetName()..'Icon'):SetVertexColor(0.3, 0.3, 0.3)
+	else
+		Caterer:ToggleActive(true)
+		getglobal(this:GetName()..'Icon'):SetVertexColor(1, 1, 1)
+    end
+end
+
+function Caterer:GetStatus(value)
+	if value then
+		return '|CFF00FF00'..L["On"]..'|r'
+	else
+		return '|CFFFF0000'..L["Off"]..'|r'
+	end
+end
+
+function Caterer:ToggleOptions(table, key)
+	local value
+	if table == 'tradeFilter' then
+		value = self.db.profile[table][key]
+		self.db.profile[table][key] = not value
+		return self.db.profile[table][key]
+	elseif table == 'whisperRequest' then
+		value = self.db.profile[table]
+		self.db.profile[table] = not value
+		return self.db.profile[table]
 	end
 end

@@ -5,14 +5,13 @@
 	inspired by Arcanum, Trade Dispenser, Vending Machine.
 ------------------------------------------------------------------------------------]]
 
-Caterer = AceLibrary('AceAddon-2.0'):new('AceConsole-2.0', 'AceEvent-2.0', 'AceDB-2.0')
+Caterer = AceLibrary('AceAddon-2.0'):new('AceConsole-2.0', 'AceEvent-2.0', 'AceDB-2.0', 'FuBarPlugin-2.0')
 
 --[[---------------------------------------------------------------------------------
 	Locals
 ------------------------------------------------------------------------------------]]
 
 local L = AceLibrary('AceLocale-2.2'):new('Caterer')
-local version = GetAddOnMetadata('Caterer', 'Version')
 local target, linkForPrint, whisperMode, whisperCount
 local stackSize = 20
 local defaults = {
@@ -25,16 +24,20 @@ local defaults = {
 		['HUNTER']  = {'60', '20'},
 		['PALADIN'] = {'40', '40'},
 		['PRIEST']  = {'0' , '60'},
-		['ROGUE']   = {'60', nil },
+		['ROGUE']   = {'60',  nil},
 		['SHAMAN']  = {'0' , '60'},
 		['WARLOCK'] = {'60', '40'},
-		['WARRIOR'] = {'60', nil }
+		['WARRIOR'] = {'60',  nil}
 	},
 	tradeFilter = {
 		friends = true,
 		group = true,
 		guild = true,
 		other = false
+	},
+	tooltip = {
+		classes = true,
+		exceptionList = false
 	}
 }
 
@@ -50,11 +53,11 @@ function Caterer:OnInitialize()
 	
 	--Popup Box if player class not mage
 	StaticPopupDialogs['CATERER_NOT_MAGE'] = {
-		text = string.format(L["Attention! Addon %s is not designed for your class. It must be disabled."], '|cff00BFFFCaterer|r'),
+		text = string.format(L["Attention! Addon %s is not designed for your class. It must be disabled."], '|cff69CCF0Caterer|r'),
 		button1 = DISABLE,
 		OnAccept = function()
 			self:ToggleActive(false)
-			getglobal('FuBarPluginCaterer '..version..'FrameMinimapButton'):Hide()
+			FuBarPluginCatererFrameMinimapButton:Hide()
 		end,
 		timeout = 0,
 		showAlert = 1,
@@ -68,7 +71,7 @@ function Caterer:OnInitialize()
 		StaticPopup_Show('CATERER_NOT_MAGE')
 	else
 		self:ToggleActive(true)
-		ChatFrame1:AddMessage('Caterer '..version..' '..L["loaded."], 0, 191, 255)
+		ChatFrame1:AddMessage('Caterer '..GetAddOnMetadata('Caterer', 'Version')..' '..L["loaded."], 0.41, 0.80, 0.94)
 	end
 end
 

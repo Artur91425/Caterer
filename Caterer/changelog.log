@@ -5,6 +5,7 @@
 + Added ignoring Mage for trades.
 + Added current settings on tooltip minimap button.
 + Added disabling addon by Left Click on the minimap button.
++ Added quick addon management through the tooltip of the minimap icon.
 
 --------------------------------------------------------------------------------
 27 Dec 2017 - v 0.3.4 (Lichery)

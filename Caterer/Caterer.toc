@@ -12,11 +12,10 @@
 ## X-Category: Mage 
 ## X-Commands: /caterer, /cater, /cat
 
-Libs\embeds.xml
+embeds.xml
 
 Locale\enUS.lua
 Locale\ruRU.lua
 
 Caterer.lua
 Options.lua
-CatererFu.lua
