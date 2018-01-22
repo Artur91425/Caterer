@@ -5,7 +5,7 @@
 	inspired by Arcanum, Trade Dispenser, Vending Machine.
 ------------------------------------------------------------------------------------]]
 
-Caterer = AceLibrary('AceAddon-2.0'):new('AceConsole-2.0', 'AceEvent-2.0', 'AceDB-2.0', 'FuBarPlugin-2.0')
+Caterer = AceLibrary('AceAddon-2.0'):new('AceConsole-2.0', 'AceEvent-2.0', 'AceDB-2.0')
 
 --[[---------------------------------------------------------------------------------
 	Locals
@@ -180,7 +180,7 @@ function Caterer:CheckTheTrade()
 	
 	if self.db.profile.tradeFilter.group and NPCInGroup then
 		return true
-	elseif self.db.profile.tradeFilter.guild and NPCInGuild then
+	elseif self.db.profile.tradeFilter.guild and NPCInMyGuild then
 		return true
 	elseif self.db.profile.tradeFilter.friends and NPCInFriendList then
 		return true
