@@ -1,6 +1,6 @@
 --[[
 	Name: Tablet-2.0
-	Revision: $Rev: 17873 $
+	Revision: $Rev: 18000 $
 	Author(s): ckknight (ckknight@gmail.com)
 	Website: http://ckknight.wowinterface.com/
 	Documentation: http://wiki.wowace.com/index.php/Tablet-2.0
@@ -10,7 +10,7 @@
 ]]
 
 local MAJOR_VERSION = "Tablet-2.0"
-local MINOR_VERSION = "$Revision: 17873 $"
+local MINOR_VERSION = "$Revision: 18000 $"
 
 if not AceLibrary then error(MAJOR_VERSION .. " requires AceLibrary") end
 if not AceLibrary:IsNewVersion(MAJOR_VERSION, MINOR_VERSION) then return end
@@ -487,6 +487,13 @@ do
 				'arg1', info.arg1,
 				'arg2', self.arg2,
 				'arg3', self.arg3,
+				'arg4', self.arg4,
+				'arg5', self.arg5,
+				'arg6', self.arg6,
+				'arg7', self.arg7,
+				'arg8', self.arg8,
+				'arg9', self.arg9,
+				'arg10', self.arg10,
 				'hasCheck', self.hasCheck,
 				'checked', self.checked,
 				'checkIcon', self.checkIcon,
@@ -1354,7 +1361,7 @@ local function AcquireFrame(self, registration, data, detachedData)
 					this.self.preventClick = nil
 					this.self.updating = true
 					this.self.preventRefresh = true
-					this.func(this.a1, this.a2, this.a3)
+					this.func(this.a1, this.a2, this.a3, this.a4, this.a5, this.a6, this.a7, this.a8, this.a9, this.a10)
 					if this.self then
 						this.self.preventRefresh = false
 						this.self:children()
@@ -1655,6 +1662,13 @@ local function AcquireFrame(self, registration, data, detachedData)
 					button.a1 = info.arg1
 					button.a2 = info.arg2
 					button.a3 = info.arg3
+					button.a4 = info.arg4
+					button.a5 = info.arg5
+					button.a6 = info.arg6
+					button.a7 = info.arg7
+					button.a8 = info.arg8
+					button.a9 = info.arg9
+					button.a10 = info.arg10
 					button.self = self
 					button:SetScript("OnMouseUp", button_OnMouseUp)
 					button:SetScript("OnMouseDown", button_OnMouseDown)
