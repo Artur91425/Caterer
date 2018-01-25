@@ -40,6 +40,16 @@ local defaults = {
 	}
 }
 
+Caterer.itemTable = { 
+	[1] = { -- food table 
+		['22895'] = L["Conjured Cinnamon Roll"], 
+		['8076'] = L["Conjured Sweet Roll"] 
+	}, 
+	[2] = { -- water table 
+		['8079'] = L["Conjured Crystal Water"], 
+		['8078'] = L["Conjured Sparkling Water"] 
+	} 
+}
 --[[---------------------------------------------------------------------------------
 	Initialization
 ------------------------------------------------------------------------------------]]
@@ -203,18 +213,8 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 		return SendChatMessage(string.format(L["I can't complete the trade right now. I'm out of %s."], linkForPrint))
 	elseif not linkForPrint then
 		CloseTrade()
-		local itemTable = {
-			[22895] = L["Conjured Cinnamon Roll"],
-			[8076] = L["Conjured Sweet Roll"],
-			[8079] = L["Conjured Crystal Water"],
-			[8078] = L["Conjured Sparkling Water"],
-		}
-		linkForPrint = '|cffffffff|Hitem:'..itemID..':0:0:0:0:0:0:0:0|h['..itemTable[itemID]..']|h|r'
-		if itemType == 1 then
-			return SendChatMessage(string.format(L["Trade is impossible, no %s."], linkForPrint))
-		else
-			return SendChatMessage(string.format(L["Trade is impossible, no %s."], linkForPrint))
-		end
+		linkForPrint = '|cffffffff|Hitem:'..itemID..':0:0:0:0:0:0:0:0|h['..self.itemTable[itemType][tostring(itemID)]..']|h|r'
+		return SendChatMessage(string.format(L["Trade is impossible, no %s."], linkForPrint))
 	end
 
 	local stackSize = 20

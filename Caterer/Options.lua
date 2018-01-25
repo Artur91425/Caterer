@@ -10,8 +10,11 @@ Caterer.options = {
 			name = L["Food"],
 			desc = L["Set food for trades."],
 			get = function() return Caterer.db.profile.tradeWhat[1] end,
-			set = function(v) Caterer.db.profile.tradeWhat[1] = v end,
-			validate = {['22895'] = L["Conjured Cinnamon Roll"], ['8076'] = L["Conjured Sweet Roll"]}
+			set = function(v)
+				Caterer.db.profile.tradeWhat[1] = v
+				Caterer:TriggerEvent('Caterer_FOOD_UPDATE')
+			end,
+			validate = {['22895'] = Caterer.itemTable[1]['22895'], ['8076'] = Caterer.itemTable[1]['8076']}
 		},
 		water = {
 			order = 2,
@@ -19,8 +22,11 @@ Caterer.options = {
 			name = L["Water"],
 			desc = L["Set water for trades."],
 			get = function() return Caterer.db.profile.tradeWhat[2] end,
-			set = function(v) Caterer.db.profile.tradeWhat[2] = v end,
-			validate = {['8079'] = L["Conjured Crystal Water"], ['8078'] = L["Conjured Sparkling Water"]}
+			set = function(v)
+				Caterer.db.profile.tradeWhat[2] = v
+				Caterer:TriggerEvent('Caterer_WATER_UPDATE')
+			end,
+			validate = {['8079'] = Caterer.itemTable[2]['8079'], ['8078'] = Caterer.itemTable[2]['8078']}
 		},
 		filter = {
 			order = 3,
