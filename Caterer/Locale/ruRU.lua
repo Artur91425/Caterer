@@ -43,7 +43,7 @@ L:RegisterTranslations('ruRU', function() return {
 	["Toggle trade with group/raid members."] = "Вкл./Выкл. обмен с членами группы/рейда.",
 	["Guild members"] = "Члены гильдии",
 	["Toggle trade with guild members."] = "Вкл./Выкл. обмен с членами гильдии.",
-	["Other"] = "Другие",
+	["Other players"] = "Другие игроки",
 	["Toggle trade with other players."] = "Вкл./Выкл. обмен с другими игроками.",
 	["List of exceptions"] = "Список исключений",
 	["Exception list options."] = "Настройки списка исключений.",

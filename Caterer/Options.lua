@@ -1,33 +1,17 @@
 local L = AceLibrary('AceLocale-2.2'):new('Caterer')
 local BC = AceLibrary('Babble-Class-2.2')
+local classes = {'Druid', 'Hunter', 'Paladin', 'Priest', 'Rogue', 'Shaman', 'Warlock', 'Warrior'}
+local trades = {
+	friends = 'Friends',
+	group = 'Group/Raid members',
+	guild = 'Guild members',
+	other = 'Other players'
+}
+local i = 0
 
 Caterer.options = {
 	type = 'group',
 	args = {
-		food = {
-			order = 1,
-			type = 'text',
-			name = L["Food"],
-			desc = L["Set food for trades."],
-			get = function() return Caterer.db.profile.tradeWhat[1] end,
-			set = function(v)
-				Caterer.db.profile.tradeWhat[1] = v
-				Caterer:TriggerEvent('Caterer_FOOD_UPDATE')
-			end,
-			validate = {['22895'] = Caterer.itemTable[1]['22895'], ['8076'] = Caterer.itemTable[1]['8076']}
-		},
-		water = {
-			order = 2,
-			type = 'text',
-			name = L["Water"],
-			desc = L["Set water for trades."],
-			get = function() return Caterer.db.profile.tradeWhat[2] end,
-			set = function(v)
-				Caterer.db.profile.tradeWhat[2] = v
-				Caterer:TriggerEvent('Caterer_WATER_UPDATE')
-			end,
-			validate = {['8079'] = Caterer.itemTable[2]['8079'], ['8078'] = Caterer.itemTable[2]['8078']}
-		},
 		filter = {
 			order = 3,
 			type = 'group',
@@ -40,188 +24,6 @@ Caterer.options = {
 					name = L["Quantity"],
 					desc = L["Quantity options."],
 					args = {
-						druid = {
-							type = 'group',
-							name = BC["Druid"],
-							desc = L["Set items quantity."],
-							args = { 
-								food = {
-									order = 1,
-									type = 'text',
-									name = L["Food"],
-									desc = L["Set quantity for food."],
-									get = function() return Caterer.db.profile.tradeCount.DRUID[1] end,
-									set = function(v) Caterer.db.profile.tradeCount.DRUID[1] = v end,
-									validate = {'0', '20', '40', '60'}
-								},
-								water = {
-									order = 2,
-									type = 'text',
-									name = L["Water"],
-									desc = L["Set quantity for water."],
-									get = function() return Caterer.db.profile.tradeCount.DRUID[2] end,
-									set = function(v) Caterer.db.profile.tradeCount.DRUID[2] = v end,
-									validate = {'0', '20', '40', '60'}
-								}
-							}
-						},
-						hunter = {
-							type = 'group',
-							name = BC["Hunter"],
-							desc = L["Set items quantity."],
-							args = { 
-								food = {
-									order = 1,
-									type = 'text',
-									name = L["Food"],
-									desc = L["Set quantity for food."],
-									get = function() return Caterer.db.profile.tradeCount.HUNTER[1] end,
-									set = function(v) Caterer.db.profile.tradeCount.HUNTER[1] = v end,
-									validate = {'0', '20', '40', '60'}
-								},
-								water = {
-									order = 2,
-									type = 'text',
-									name = L["Water"],
-									desc = L["Set quantity for water."],
-									get = function() return Caterer.db.profile.tradeCount.HUNTER[2] end,
-									set = function(v) Caterer.db.profile.tradeCount.HUNTER[2] = v end,
-									validate = {'0', '20', '40', '60'}
-								}
-							}
-						},
-						paladin = {
-							type = 'group',
-							name = BC["Paladin"],
-							desc = L["Set items quantity."],
-							args = { 
-								food = {
-									order = 1,
-									type = 'text',
-									name = L["Food"],
-									desc = L["Set quantity for food."],
-									get = function() return Caterer.db.profile.tradeCount.PALADIN[1] end,
-									set = function(v) Caterer.db.profile.tradeCount.PALADIN[1] = v end,
-									validate = {'0', '20', '40', '60'}
-								},
-								water = {
-									order = 2,
-									type = 'text',
-									name = L["Water"],
-									desc = L["Set quantity for water."],
-									get = function() return Caterer.db.profile.tradeCount.PALADIN[2] end,
-									set = function(v) Caterer.db.profile.tradeCount.PALADIN[2] = v end,
-									validate = {'0', '20', '40', '60'}
-								}
-							}
-						},
-						priest = {
-							type = 'group',
-							name = BC["Priest"],
-							desc = L["Set items quantity."],
-							args = { 
-								food = {
-									order = 1,
-									type = 'text',
-									name = L["Food"],
-									desc = L["Set quantity for food."],
-									get = function() return Caterer.db.profile.tradeCount.PRIEST[1] end,
-									set = function(v) Caterer.db.profile.tradeCount.PRIEST[1] = v end,
-									validate = {'0', '20', '40', '60'}
-								},
-								water = {
-									order = 2,
-									type = 'text',
-									name = L["Water"],
-									desc = L["Set quantity for water."],
-									get = function() return Caterer.db.profile.tradeCount.PRIEST[2] end,
-									set = function(v) Caterer.db.profile.tradeCount.PRIEST[2] = v end,
-									validate = {'0', '20', '40', '60'}
-								}
-							}
-						},
-						rogue = {
-							type = 'group',
-							name = BC["Rogue"],
-							desc = L["Set items quantity."],
-							args = { 
-								food = {
-									order = 1,
-									type = 'text',
-									name = L["Food"],
-									desc = L["Set quantity for food."],
-									get = function() return Caterer.db.profile.tradeCount.ROGUE[1] end,
-									set = function(v) Caterer.db.profile.tradeCount.ROGUE[1] = v end,
-									validate = {'0', '20', '40', '60'}
-								}
-							}
-						},
-						shaman = {
-							type = 'group',
-							name = BC["Shaman"],
-							desc = L["Set items quantity."],
-							args = { 
-								food = {
-									order = 1,
-									type = 'text',
-									name = L["Food"],
-									desc = L["Set quantity for food."],
-									get = function() return Caterer.db.profile.tradeCount.SHAMAN[1] end,
-									set = function(v) Caterer.db.profile.tradeCount.SHAMAN[1] = v end,
-									validate = {'0', '20', '40', '60'}
-								},
-								water = {
-									order = 2,
-									type = 'text',
-									name = L["Water"],
-									desc = L["Set quantity for water."],
-									get = function() return Caterer.db.profile.tradeCount.SHAMAN[2] end,
-									set = function(v) Caterer.db.profile.tradeCount.SHAMAN[2] = v end,
-									validate = {'0', '20', '40', '60'}
-								}
-							}
-						},
-						warlock = {
-							type = 'group',
-							name = BC["Warlock"],
-							desc = L["Set items quantity."],
-							args = { 
-								food = {
-									order = 1,
-									type = 'text',
-									name = L["Food"],
-									desc = L["Set quantity for food."],
-									get = function() return Caterer.db.profile.tradeCount.WARLOCK[1] end,
-									set = function(v) Caterer.db.profile.tradeCount.WARLOCK[1] = v end,
-									validate = {'0', '20', '40', '60'}
-								},
-								water = {
-									order = 2,
-									type = 'text',
-									name = L["Water"],
-									desc = L["Set quantity for water."],
-									get = function() return Caterer.db.profile.tradeCount.WARLOCK[2] end,
-									set = function(v) Caterer.db.profile.tradeCount.WARLOCK[2] = v end,
-									validate = {'0', '20', '40', '60'}
-								}
-							}
-						},
-						warrior = {
-							type = 'group',
-							name = BC["Warrior"],
-							desc = L["Set items quantity."],
-							args = { 
-								food = {
-									order = 1,
-									type = 'text',
-									name = L["Food"],
-									desc = L["Set quantity for food."],
-									get = function() return Caterer.db.profile.tradeCount.WARRIOR[1] end,
-									set = function(v) Caterer.db.profile.tradeCount.WARRIOR[1] = v end,
-									validate = {'0', '20', '40', '60'}
-								}
-							}
-						},
 						space1 = {
 							order = 200,
 							type = 'header',
@@ -242,40 +44,7 @@ Caterer.options = {
 					type = 'group',
 					name = L["Trade"],
 					desc = L["Trade options."],
-					args = {
-						friends = {
-							order = 1,
-							type = 'toggle',
-							name = L["Friends"],
-							desc = L["Toggle trade with friends."],
-							get = function() return Caterer.db.profile.tradeFilter.friends end,
-							set = function(v) Caterer.db.profile.tradeFilter.friends = v end,
-						},
-						group = {
-							order = 2,
-							type = 'toggle',
-							name = L["Group/Raid members"],
-							desc = L["Toggle trade with group/raid members."],
-							get = function() return Caterer.db.profile.tradeFilter.group end,
-							set = function(v) Caterer.db.profile.tradeFilter.group = v end,
-						},
-						guild = {
-							order = 3,
-							type = 'toggle',
-							name = L["Guild members"],
-							desc = L["Toggle trade with guild members."],
-							get = function() return Caterer.db.profile.tradeFilter.guild end,
-							set = function(v) Caterer.db.profile.tradeFilter.guild = v end,
-						},
-						other = {
-							order = 4,
-							type = 'toggle',
-							name = L["Other"],
-							desc = L["Toggle trade with other players."],
-							get = function() return Caterer.db.profile.tradeFilter.other end,
-							set = function(v) Caterer.db.profile.tradeFilter.other = v end,
-						}
-					}
+					args = {}
 				},
 				list = {
 					order = 3,
@@ -353,6 +122,61 @@ Caterer.options = {
 	}
 }
 
+for trade, trade_name in pairs(trades) do
+	i = i + 1
+	Caterer.options.args.filter.args.trade.args[trade] = {
+		order = i,
+		type = 'toggle',
+		name = L[trade_name],
+		desc = L[string.format("Toggle trade with %s.", string.lower(trade_name))],
+		get = function() return Caterer.db.profile.tradeFilter[trade] end,
+		set = function(v) Caterer.db.profile.tradeFilter[trade] = v end,
+	}
+end
+
+for k, class in pairs(classes) do
+	Caterer.options.args.filter.args.quantity.args[string.lower(class)] = {
+		order = k,
+		type = 'group',
+		name = BC[class],
+		desc = L["Set items quantity."],
+		args = {}
+	}
+end
+
+for i = 1, 2 do -- 1 - food, 2 - water
+    local name
+    if i == 1 then name = 'Food' else name = 'Water' end
+    local itemType = i
+    Caterer.options.args[string.lower(name)] = {
+		order = itemType,
+		type = 'text',
+		name = L[name],
+		desc = L[string.format("Set %s for trades.", string.lower(name))],
+		get = function() return Caterer.db.profile.tradeWhat[itemType] end,
+		set = function(v)
+			Caterer.db.profile.tradeWhat[itemType] = v
+			Caterer:TriggerEvent('Caterer_ITEMS_UPDATE')
+		end,
+		validate = Caterer.itemTable[itemType]
+	}
+	for _, v in pairs(classes) do
+		local class = v
+		if not (i == 2 and (class == 'Rogue' or class == 'Warrior')) then
+			Caterer.options.args.filter.args.quantity.args[string.lower(v)].args[string.lower(name)] = {
+				order = itemType,
+				type = 'text',
+				name = L[name],
+				desc = L[string.format("Set quantity for %s.", string.lower(name))],
+				get = function() return Caterer.db.profile.tradeCount.DRUID[2] end,
+				get = function() return Caterer.db.profile.tradeCount[string.upper(class)][itemType] end,
+				set = function(v) Caterer.db.profile.tradeCount[string.upper(class)][itemType] = v end,
+				validate = {'0', '20', '40', '60'}
+			}
+		end
+	end
+end
+
 StaticPopupDialogs['CATERER_CONFIRM_CLEAR'] = {
 	text = L["Do you really want to clear list of exceptions?"],
 	button1 = YES,
@@ -402,6 +226,7 @@ function Caterer:AddPlayer(str)
 	table.insert(self.db.profile.exceptionList[name], food)
 	table.insert(self.db.profile.exceptionList[name], water)
 	self:Print(string.format(L["%s was successfully %s."], L["Player"]..' <|cffbfffff'..name..'|r> ', type))
+	self:TriggerEvent('Caterer_LIST_UPDATE')
 end
 
 function Caterer:RemovePlayer(name)

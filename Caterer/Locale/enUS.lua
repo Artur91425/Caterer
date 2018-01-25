@@ -43,7 +43,7 @@ L:RegisterTranslations('enUS', function() return {
 	["Toggle trade with group/raid members."] = true,
 	["Guild members"] = true,
 	["Toggle trade with guild members."] = true,
-	["Other"] = true,
+	["Other players"] = true,
 	["Toggle trade with other players."] = true,
 	["List of exceptions"] = true,
 	["Exception list options."] = true,

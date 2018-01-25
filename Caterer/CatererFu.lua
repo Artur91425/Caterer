@@ -43,8 +43,7 @@ end
 
 function CatererFu:OnEnable()
 	self:RegisterEvent('BAG_UPDATE', 'OnTextUpdate')
-	self:RegisterEvent('Caterer_FOOD_UPDATE', 'OnTextUpdate')
-	self:RegisterEvent('Caterer_WATER_UPDATE', 'OnTextUpdate')
+	self:RegisterEvent('Caterer_ITEMS_UPDATE', 'OnTextUpdate')
 end
 
 function CatererFu:OnTextUpdate()
@@ -119,12 +118,12 @@ function CatererFu:ToggleOptions(arg2, arg3) -- arg1 = self
 		Caterer.db.profile[arg2] = not value
 		return Caterer.db.profile[arg2]
 	elseif arg2 == 'tradeWhat' then
-        curKey = Caterer.db.profile[arg2][arg3]
-        newKey, value = next(Caterer.itemTable[arg3], curKey)
-        if not newKey then
-            newKey, value = next(Caterer.itemTable[arg3])
-        end
-        Caterer.db.profile[arg2][arg3] = newKey
-        return Caterer.db.profile[arg2][arg3]
+		curKey = Caterer.db.profile[arg2][arg3]
+		newKey, value = next(Caterer.itemTable[arg3], curKey)
+		if not newKey then
+			newKey, value = next(Caterer.itemTable[arg3])
+		end
+		Caterer.db.profile[arg2][arg3] = newKey
+		return Caterer.db.profile[arg2][arg3]
 	end
 end
