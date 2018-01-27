@@ -105,7 +105,7 @@ Caterer.options = {
 							get = function() return Caterer.db.profile.tooltip.exceptionList end,
 							set = function(v)
 								Caterer.db.profile.tooltip.exceptionList = v
-								Caterer:TriggerEvent('Caterer_LIST_TOGGLE')
+								Caterer:TriggerEvent('Caterer_LIST_UPDATE')
 							end,
 						}
 					}
