@@ -21,6 +21,7 @@ local Crayon = AceLibrary('Crayon-2.0')
 
 function CatererFu:OnInitialize()
 	self:RegisterDB('CatererDB')
+	self:RegisterDefaults('profile', {hiddenCategory = {}})
 
 	self.name = 'Caterer '..GetAddOnMetadata('Caterer', 'Version')
 	self.defaultMinimapPosition = 180
@@ -37,9 +38,9 @@ function CatererFu:OnInitialize()
 	end
 
 	-- fix Shaman class color
-	RAID_CLASS_COLORS['SHAMAN'].r = 0.0
-	RAID_CLASS_COLORS['SHAMAN'].g = 0.44
-	RAID_CLASS_COLORS['SHAMAN'].b = 0.87
+	RAID_CLASS_COLORS['SHAMAN'].r = .0
+	RAID_CLASS_COLORS['SHAMAN'].g = .44
+	RAID_CLASS_COLORS['SHAMAN'].b = .87
 end
 
 function CatererFu:OnEnable()
@@ -61,29 +62,66 @@ end
 function CatererFu:OnTooltipUpdate()
 	Tablet:SetTitle(self.name)
 	Tablet:SetTitleColor(0.41, 0.80, 0.94)
-	local cat1 = Tablet:AddCategory('columns', 2, 'text', ' ')
+	local cat1 = Tablet:AddCategory('columns', 2)
 	cat1:AddLine('text', L["Food"]..':', 'text2', Caterer.itemTable[1][Caterer.db.profile.tradeWhat[1]], 'func', self.ToggleOptions, 'arg1', self, 'arg2', 'tradeWhat', 'arg3', 1)
 	cat1:AddLine('text', L["Water"]..':', 'text2', Caterer.itemTable[2][Caterer.db.profile.tradeWhat[2]], 'func', self.ToggleOptions, 'arg1', self, 'arg2', 'tradeWhat', 'arg3', 2)
 	if Caterer.db.profile.tooltip.classes then
-		local cat2 = Tablet:AddCategory('columns', 3, 'text', ' ')
+		local cat2_name = L["Class settings"]
+		local cat2 = Tablet:AddCategory('columns', 3,
+			'text', cat2_name,
+			'func', 'ToggleCategory', 'arg1', self, 'arg2', cat2_name,
+			'textR', 1, 'textG', .823529, 'textB', 0,
+			'showWithoutChildren', true,
+			'checked', true, 'hasCheck', true,
+			'checkIcon', self.db.profile.hiddenCategory[cat2_name] and 'Interface\\Buttons\\UI-PlusButton-Up' or 'Interface\\Buttons\\UI-MinusButton-Up'
+		)
+		if not self.db.profile.hiddenCategory[cat2_name] then
 			cat2:AddLine('text', L["Class"], 'text2', L["Food"], 'text3', L["Water"], 'justify3', 'CENTER')
-		for class, count in pairs(Caterer.db.profile.tradeCount) do
-			local name = Caterer.options.args.filter.args.quantity.args[string.lower(class)].name
-			local color = RAID_CLASS_COLORS[class]
-			cat2:AddLine('text', name..':', 'textR', color.r, 'textG', color.g, 'textB', color.b, 'text2', count[1], 'text3', count[2] or L["nil"], 'justify3', 'CENTER')
+			for class, count in pairs(Caterer.db.profile.tradeCount) do
+				local name = Caterer.options.args.filter.args.quantity.args[string.lower(class)].name
+				local color = RAID_CLASS_COLORS[class]
+				cat2:AddLine('text', name..':', 'textR', color.r, 'textG', color.g, 'textB', color.b, 'text2', count[1], 'text3', count[2] or L["nil"], 'justify3', 'CENTER')
+			end
 		end
 	end
 	local cat3 = Tablet:AddCategory('columns', 2)
-	for k, v in pairs(Caterer.db.profile.tradeFilter) do
-		cat3:AddLine('text', L["Trade with"..' '..k]..':', 'text2', self:GetStatus(v), 'func', self.ToggleOptions, 'arg1', self, 'arg2', 'tradeFilter', 'arg3', k)
+	for name, v in pairs(Caterer.db.profile.tradeFilter) do
+		cat3:AddLine('text', L["Trade with"..' '..name]..':',
+			'text2', v and L["On"] or L["Off"],
+			'text2R', v and 0 or 1,
+			'text2G', v and 1 or 0,
+			'text2B', 0,
+			'func', self.ToggleOptions, 'arg1', self, 'arg2', 'tradeFilter', 'arg3', name
+		)
 	end
 	local cat4 = Tablet:AddCategory('columns', 2)
-	cat4:AddLine('text', L["Whisper requests"]..':', 'text2', self:GetStatus(Caterer.db.profile.whisperRequest), 'func', self.ToggleOptions, 'arg1', self, 'arg2', 'whisperRequest')
-	if Caterer.db.profile.tooltip.exceptionList and next(Caterer.db.profile.exceptionList) then
-		local cat5 = Tablet:AddCategory('columns', 3, 'text', L["List of exceptions"]..':', 'font', GameTooltipHeaderText, 'textR', 1, 'textG', 0.823529, 'textB', 0)
-		cat5:AddLine('text', L["Player"], 'text2', L["Food"], 'text3', L["Water"], 'justify3', 'CENTER')
-		for name, count in pairs(Caterer.db.profile.exceptionList) do
-			cat5:AddLine('text', '|cffbfffff'..name..'|r', 'text2', count[1], 'text3', count[2], 'justify3', 'CENTER', 'func', Caterer.RemovePlayer, 'arg1', Caterer, 'arg2', name)
+	cat4:AddLine('text', L["Whisper requests"]..':',
+		'text2', Caterer.db.profile.whisperRequest and L["On"] or L["Off"],
+		'text2R', Caterer.db.profile.whisperRequest and 0 or 1,
+		'text2G', Caterer.db.profile.whisperRequest and 1 or 0,
+		'text2B', 0,
+		'func', self.ToggleOptions, 'arg1', self, 'arg2', 'whisperRequest'
+	)
+	if Caterer.db.profile.tooltip.exceptionList then
+		local cat5_name = L["List of exceptions"]
+		local cat5 = Tablet:AddCategory('id', cat5_name, 'columns', 3,
+			'text', cat5_name,
+			'func', 'ToggleCategory', 'arg1', self, 'arg2', cat5_name,
+			'font', GameTooltipHeaderText,
+			'textR', 1, 'textG', .823529, 'textB', 0,
+			'showWithoutChildren', true,
+			'checked', true, 'hasCheck', true,
+			'checkIcon', self.db.profile.hiddenCategory[cat5_name] and 'Interface\\Buttons\\UI-PlusButton-Up' or 'Interface\\Buttons\\UI-MinusButton-Up'
+		)
+		if not self.db.profile.hiddenCategory[cat5_name] then
+			if next(Caterer.db.profile.exceptionList) then
+				cat5:AddLine('text', L["Player"], 'text2', L["Food"], 'text3', L["Water"], 'justify3', 'CENTER')
+				for name, count in pairs(Caterer.db.profile.exceptionList) do
+					cat5:AddLine('text', name, 'textR', .75, 'textG', 1, 'textB', 1, 'text2', count[1], 'text3', count[2], 'justify3', 'CENTER', 'func', Caterer.RemovePlayer, 'arg1', Caterer, 'arg2', name)
+				end
+			else
+				cat5:AddLine('text', L["The list is empty."])
+			end
 		end
 	end
 	Tablet:SetHint('\n'..L["LeftClick to toggle addon.\nRightClick to open dropdown menu.\nLeftClick on the point tooltip to quickly manage the addon."])
@@ -95,11 +133,13 @@ end
 
 function CatererFu:OnClick()
 	if Caterer:IsActive() then
+		getglobal(this:GetName()..'Icon'):SetVertexColor(.3, .3, .3)
 		Caterer:ToggleActive(false)
-		getglobal(this:GetName()..'Icon'):SetVertexColor(0.3, 0.3, 0.3)
+		self:UpdateTooltip()
 	else
-		Caterer:ToggleActive(true)
 		getglobal(this:GetName()..'Icon'):SetVertexColor(1, 1, 1)
+		Caterer:ToggleActive(true)
+		self:UpdateTooltip()
     end
 end
 
@@ -107,12 +147,9 @@ end
 	Shared Functions
 -----------------------------------------------------------------------------------]]
 
-function CatererFu:GetStatus(value)
-	if value then
-		return '|CFF00FF00'..L["On"]..'|r'
-	else
-		return '|CFFFF0000'..L["Off"]..'|r'
-	end
+function CatererFu:ToggleCategory(category)
+	self.db.profile.hiddenCategory[category] = not self.db.profile.hiddenCategory[category]
+	self:UpdateTooltip()
 end
 
 function CatererFu:ToggleOptions(arg2, arg3) -- arg1 = self
@@ -120,11 +157,9 @@ function CatererFu:ToggleOptions(arg2, arg3) -- arg1 = self
 	if arg2 == 'tradeFilter' then
 		value = Caterer.db.profile[arg2][arg3]
 		Caterer.db.profile[arg2][arg3] = not value
-		return Caterer.db.profile[arg2][arg3]
 	elseif arg2 == 'whisperRequest' then
 		value = Caterer.db.profile[arg2]
 		Caterer.db.profile[arg2] = not value
-		return Caterer.db.profile[arg2]
 	elseif arg2 == 'tradeWhat' then
 		curKey = Caterer.db.profile[arg2][arg3]
 		newKey, value = next(Caterer.itemTable[arg3], curKey)
@@ -133,6 +168,5 @@ function CatererFu:ToggleOptions(arg2, arg3) -- arg1 = self
 		end
 		Caterer.db.profile[arg2][arg3] = newKey
 		self:UpdateText()
-		return Caterer.db.profile[arg2][arg3]
 	end
 end

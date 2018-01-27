@@ -9,6 +9,7 @@ L:RegisterTranslations('enUS', function() return {
 	["Trade with group"] = "Trade with group/raid members",
 	["Trade with guild"] = "Trade with guild members",
 	["Trade with other"] = true,
+	["Class settings"] = true,
 	["Class"] = true,
 	["nil"] = true,
 	["On"] = true,

@@ -9,6 +9,7 @@ L:RegisterTranslations('ruRU', function() return {
 	["Trade with group"] = "Обмен с членами группы/рейда",
 	["Trade with guild"] = "Обмен с членами гильдии",
 	["Trade with other"] = "Обмен с другими",
+	["Class settings"] = "Настройки класса",
 	["Class"] = "Класс",
 	["nil"] = "нет",
 	["On"] = "Вкл.",
