@@ -40,16 +40,17 @@ local defaults = {
 	}
 }
 
-Caterer.itemTable = { 
-	[1] = { -- food table 
-		['22895'] = L["Conjured Cinnamon Roll"], 
-		['8076'] = L["Conjured Sweet Roll"] 
-	}, 
-	[2] = { -- water table 
-		['8079'] = L["Conjured Crystal Water"], 
-		['8078'] = L["Conjured Sparkling Water"] 
-	} 
+Caterer.itemTable = {
+	[1] = { -- food table
+		['22895'] = L["Conjured Cinnamon Roll"],
+		['8076'] = L["Conjured Sweet Roll"]
+	},
+	[2] = { -- water table
+		['8079'] = L["Conjured Crystal Water"],
+		['8078'] = L["Conjured Sparkling Water"]
+	}
 }
+
 --[[---------------------------------------------------------------------------------
 	Initialization
 ------------------------------------------------------------------------------------]]

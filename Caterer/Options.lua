@@ -1,5 +1,7 @@
 local L = AceLibrary('AceLocale-2.2'):new('Caterer')
 local BC = AceLibrary('Babble-Class-2.2')
+local Dewdrop = AceLibrary('Dewdrop-2.0')
+
 local classes = {'Druid', 'Hunter', 'Paladin', 'Priest', 'Rogue', 'Shaman', 'Warlock', 'Warrior'}
 local trades = {
 	friends = 'Friends',
@@ -35,10 +37,13 @@ Caterer.options = {
 							name = L["Add to tooltip"],
 							desc = L["Adds the current settings to the tooltip."],
 							get = function() return Caterer.db.profile.tooltip.classes end,
-							set = function(v) Caterer.db.profile.tooltip.classes = v end,
+							set = function(v)
+								Caterer.db.profile.tooltip.classes = v
+								Caterer:TriggerEvent('Caterer_CLASS_UPDATE')
+							end,
 						}
 					}
-				},	
+				},
 				trade = {
 					order = 2,
 					type = 'group',
@@ -59,7 +64,7 @@ Caterer.options = {
 							desc = string.format(L["Add/Edit a player to the exclusion list.\n\nUsage: <%s> <%s> <%s>"], L["player name"], L["amount of food"], L["amount of water"]),
 							usage = '<'..L["player name"]..'> <'..L["amount of food"]..'> <'..L["amount of water"]..'>',
 							get = false,
-							set = function(str) Caterer:AddPlayer(str) end,
+							set = 'AddPlayer',
 						},
 						remove = {
 							order = 2,
@@ -68,14 +73,14 @@ Caterer.options = {
 							desc = string.format(L["Remove a player from the exclusion list.\n\nUsage: <%s>"], L["player name"]),
 							usage = '<'..L["player name"]..'>',
 							get = false,
-							set = function(name) Caterer:RemovePlayer(name) end,
+							set = 'RemovePlayer',
 						},
 						print = {
 							order = 3,
 							type = 'execute',
 							name = L["Print"],
 							desc = L["Printing an exclusion list."],
-							func = function() Caterer:PrintList() end,
+							func = 'PrintList',
 						},
 						space2 = {
 							order = 4,
@@ -88,7 +93,7 @@ Caterer.options = {
 							name = L["Clear"],
 							desc = L["Completely clears the entire list."],
 							func = function()
-								Dewdrop20Level3:Hide() -- hide, so as not to interfere
+								Dewdrop:Close(1) -- hide, so as not to interfere
 								StaticPopup_Show('CATERER_CONFIRM_CLEAR')
 							end,
 						},
@@ -98,7 +103,10 @@ Caterer.options = {
 							name = L["Add to tooltip"],
 							desc = L["Adds the list of exceptions to the tooltip."],
 							get = function() return Caterer.db.profile.tooltip.exceptionList end,
-							set = function(v) Caterer.db.profile.tooltip.exceptionList = v end,
+							set = function(v)
+								Caterer.db.profile.tooltip.exceptionList = v
+								Caterer:TriggerEvent('Caterer_LIST_TOGGLE')
+							end,
 						}
 					}
 				}
@@ -122,7 +130,8 @@ Caterer.options = {
 	}
 }
 
-for trade, trade_name in pairs(trades) do
+for k, trade_name in pairs(trades) do
+	local trade = k
 	i = i + 1
 	Caterer.options.args.filter.args.trade.args[trade] = {
 		order = i,
@@ -146,8 +155,8 @@ end
 
 for i = 1, 2 do -- 1 - food, 2 - water
     local name
-    if i == 1 then name = 'Food' else name = 'Water' end
     local itemType = i
+    if i == 1 then name = 'Food' else name = 'Water' end
     Caterer.options.args[string.lower(name)] = {
 		order = itemType,
 		type = 'text',
@@ -162,15 +171,17 @@ for i = 1, 2 do -- 1 - food, 2 - water
 	}
 	for _, v in pairs(classes) do
 		local class = v
-		if not (i == 2 and (class == 'Rogue' or class == 'Warrior')) then
-			Caterer.options.args.filter.args.quantity.args[string.lower(v)].args[string.lower(name)] = {
+		if class ~= 'Rogue' and class ~= 'Warrior' or i ~= 2 then
+			Caterer.options.args.filter.args.quantity.args[string.lower(class)].args[string.lower(name)] = {
 				order = itemType,
 				type = 'text',
 				name = L[name],
 				desc = L[string.format("Set quantity for %s.", string.lower(name))],
-				get = function() return Caterer.db.profile.tradeCount.DRUID[2] end,
 				get = function() return Caterer.db.profile.tradeCount[string.upper(class)][itemType] end,
-				set = function(v) Caterer.db.profile.tradeCount[string.upper(class)][itemType] = v end,
+				set = function(v)
+					Caterer.db.profile.tradeCount[string.upper(class)][itemType] = v
+					Caterer:TriggerEvent('Caterer_CLASS_UPDATE')
+				end,
 				validate = {'0', '20', '40', '60'}
 			}
 		end
@@ -183,6 +194,7 @@ StaticPopupDialogs['CATERER_CONFIRM_CLEAR'] = {
 	button2 = NO,
 	OnAccept = function()
 		Caterer.db.profile.exceptionList = {}
+		Caterer:TriggerEvent('Caterer_LIST_UPDATE')
 		Caterer:Print(L["The list has been successfully cleared."])
 	end,
 	timeout = 0,
@@ -196,8 +208,9 @@ StaticPopupDialogs['CATERER_CONFIRM_RESET'] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		Dewdrop20Level1:Hide() -- Hide Dewdrop menu (this needs for update settings on Dewdrop menu)
+		Dewdrop:Close(1) -- Close Dewdrop menu (this needs for update settings on Dewdrop menu)
 		Caterer:ResetDB('profile')
+		Caterer:TriggerEvent('Caterer_RESETDB')
 		Caterer:Print(L["All settings are reset to default value."])
 	end,
 	timeout = 0,

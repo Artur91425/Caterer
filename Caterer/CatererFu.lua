@@ -13,6 +13,7 @@ CatererFu.hasIcon = 'Interface\\Icons\\Inv_drink_18'
 
 local L = AceLibrary('AceLocale-2.2'):new('Caterer')
 local Tablet = AceLibrary('Tablet-2.0')
+local Crayon = AceLibrary('Crayon-2.0')
 
 --[[---------------------------------------------------------------------------------
 	Initialization
@@ -44,13 +45,16 @@ end
 function CatererFu:OnEnable()
 	self:RegisterEvent('BAG_UPDATE', 'OnTextUpdate')
 	self:RegisterEvent('Caterer_ITEMS_UPDATE', 'OnTextUpdate')
+	self:RegisterEvent('Caterer_CLASS_UPDATE', 'OnDataUpdate')
+	self:RegisterEvent('Caterer_LIST_UPDATE', 'OnDataUpdate')
+	self:RegisterEvent('Caterer_RESETDB', 'OnDataUpdate')
 end
 
 function CatererFu:OnTextUpdate()
 	local foodCount = Caterer:GetNumItems(Caterer.db.profile.tradeWhat[1])
 	local waterCount = Caterer:GetNumItems(Caterer.db.profile.tradeWhat[2])
-	local food = string.format('|cff%s%d|r', AceLibrary('Crayon-2.0'):GetThresholdHexColorTrivial(foodCount, 0, 100, 200, 300, 400), foodCount)
-	local water = string.format('|cff%s%d|r', AceLibrary('Crayon-2.0'):GetThresholdHexColor(waterCount, 0, 100, 200, 300, 400), waterCount)
+	local food = string.format('|cff%s%d|r', Crayon:GetThresholdHexColor(foodCount, 0, 100, 200, 300, 400), foodCount)
+	local water = string.format('|cff%s%d|r', Crayon:GetThresholdHexColor(waterCount, 0, 100, 200, 300, 400), waterCount)
 	self:SetText(L["Food"]..': '..food..' '..L["Water"]..': '..water)
 end
 
@@ -83,6 +87,10 @@ function CatererFu:OnTooltipUpdate()
 		end
 	end
 	Tablet:SetHint('\n'..L["LeftClick to toggle addon.\nRightClick to open dropdown menu.\nLeftClick on the point tooltip to quickly manage the addon."])
+end
+
+function CatererFu:OnDataUpdate()
+	self:UpdateTooltip()
 end
 
 function CatererFu:OnClick()
@@ -124,6 +132,7 @@ function CatererFu:ToggleOptions(arg2, arg3) -- arg1 = self
 			newKey, value = next(Caterer.itemTable[arg3])
 		end
 		Caterer.db.profile[arg2][arg3] = newKey
+		self:UpdateText()
 		return Caterer.db.profile[arg2][arg3]
 	end
 end
