@@ -14,7 +14,7 @@
 
 local MAJOR_VERSION = "FuBarPlugin-2.0"
 local MINIMAPCONTAINER_MAJOR_VERSION = "FuBarPlugin-MinimapContainer-2.0"
-local MINOR_VERSION = "$Revision: 90000 $"
+local MINOR_VERSION = "$Revision: 90001 $"
 
 -- This ensures the code is only executed if the libary doesn't already exist, or is a newer version
 if not AceLibrary then error(MAJOR_VERSION .. " requires AceLibrary.") end
@@ -435,7 +435,9 @@ function FuBarPlugin:RegisterTablet()
 					Dewdrop:FeedAceOptionsTable(self.OnMenuRequest)
 				end
 			end,
-			'hideWhenEmpty', self.tooltipHiddenWhenEmpty
+			'hideWhenEmpty', self.tooltipHiddenWhenEmpty,
+			'showTitleWhenDetached', self.titleWhenTooltipDetached,
+			'showHintWhenDetached', self.hintWhenTooltipDetached
 		)
 		local func = self.frame:GetScript("OnEnter")
 		local function newFunc()
