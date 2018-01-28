@@ -24,6 +24,7 @@ function CatererFu:OnInitialize()
 	self:RegisterDefaults('profile', {hiddenCategory = {}})
 
 	self.title = 'Caterer '..GetAddOnMetadata('Caterer', 'Version')
+	self.titleWhenTooltipDetached = true
 	self.defaultMinimapPosition = 180
 	self.hideWithoutStandby = true
 	self.clickableTooltip = true
