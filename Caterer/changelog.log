@@ -1,4 +1,12 @@
 --------------------------------------------------------------------------------
+28 Jan 2018 - v 0.3.6 (Lichery)
+--------------------------------------------------------------------------------
++ Added food and water count to FuBar panel.
++ Added current food and water on tooltip minimap button.
++ Multiple optimization for code.
++ Added option to minimize category on tooltip minimap button.
+
+--------------------------------------------------------------------------------
 21 Jan 2018 - v 0.3.5 (Lichery)
 --------------------------------------------------------------------------------
 + Added support Shaman.
