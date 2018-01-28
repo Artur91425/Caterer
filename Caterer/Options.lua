@@ -223,7 +223,7 @@ StaticPopupDialogs['CATERER_CONFIRM_RESET'] = {
 
 function Caterer:AddPlayer(str)
 	local _, _, name, food, water = string.find(str, '(%a+) (%d+) (%d+)')
-	if not (name or food or water) or math.mod(food, 20) ~= 0 or math.mod(water, 20) ~= 0 then
+	if not (name and food and water) or math.mod(food, 20) ~= 0 or math.mod(water, 20) ~= 0 then
 		return self:Print(string.format(L["Expected string: '<%s> <%s> <%s>'. Note: the number must be a multiple of 20."], L["player name"], L["amount of food"], L["amount of water"]))
 	elseif food + water > 120 then
 		return self:Print(L["The total number of items should not exceed 120."])

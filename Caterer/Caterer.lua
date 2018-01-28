@@ -141,7 +141,7 @@ function Caterer:CHAT_MSG_WHISPER(arg1, arg2)
 	waterCount = tonumber(waterCount)
 	if not self.db.profile.whisperRequest then
 		return SendChatMessage('[Caterer] '..L["Service is temporarily disabled."], 'WHISPER', nil, arg2)
-	elseif not (foodCount or waterCount) or math.mod(foodCount, 20) ~= 0 or math.mod(waterCount, 20) ~= 0 then
+	elseif not (foodCount and waterCount) or math.mod(foodCount, 20) ~= 0 or math.mod(waterCount, 20) ~= 0 then
 		return SendChatMessage(string.format('[Caterer] '..L["Expected string: '<%s> <%s> <%s>'. Note: the number must be a multiple of 20."], '#cat', L["amount of food"], L["amount of water"]), 'WHISPER', nil, arg2)
 	elseif foodCount + waterCount > 120 then
 		return SendChatMessage('[Caterer] '..L["The total number of items should not exceed 120."], 'WHISPER', nil, arg2)
