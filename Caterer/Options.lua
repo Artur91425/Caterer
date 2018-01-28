@@ -125,7 +125,10 @@ Caterer.options = {
 			type = 'execute',
 			name = L["Reset"],
 			desc = L["Reset all settings."],
-			func = function() StaticPopup_Show('CATERER_CONFIRM_RESET') end,
+			func = function()
+				Dewdrop:Close(1) -- Close Dewdrop menu (this needs for update settings on Dewdrop menu)
+				StaticPopup_Show('CATERER_CONFIRM_RESET')
+			end,
 		}
 	}
 }
@@ -208,7 +211,6 @@ StaticPopupDialogs['CATERER_CONFIRM_RESET'] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		Dewdrop:Close(1) -- Close Dewdrop menu (this needs for update settings on Dewdrop menu)
 		Caterer:ResetDB('profile')
 		Caterer:TriggerEvent('Caterer_RESETDB')
 		Caterer:Print(L["All settings are reset to default value."])

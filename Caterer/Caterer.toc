@@ -4,7 +4,7 @@
 ## Notes-ruRU: Автоматическая раздача еды и воды для игроков, открывающих торговлю.
 ## Author: Lichery
 ## Version: 0.3.5
-## SavedVariablesPerCharacter: CatererDB
+## SavedVariablesPerCharacter: CatererDB, CatererFuDB
 
 ## X-Date: 12.12.2017
 ## X-Credits: Original author Pik/Silvermoon

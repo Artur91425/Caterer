@@ -20,14 +20,13 @@ local Crayon = AceLibrary('Crayon-2.0')
 ------------------------------------------------------------------------------------]]
 
 function CatererFu:OnInitialize()
-	self:RegisterDB('CatererDB')
+	self:RegisterDB('CatererFuDB')
 	self:RegisterDefaults('profile', {hiddenCategory = {}})
 
-	self.name = 'Caterer '..GetAddOnMetadata('Caterer', 'Version')
+	self.title = 'Caterer '..GetAddOnMetadata('Caterer', 'Version')
 	self.defaultMinimapPosition = 180
 	self.hideWithoutStandby = true
 	self.clickableTooltip = true
-	self.cannotHideIcon = true
 
 	self.OnMenuRequest = Caterer.options
 	local args = AceLibrary('FuBarPlugin-2.0'):GetAceOptionsDataTable(self)
@@ -60,22 +59,21 @@ function CatererFu:OnTextUpdate()
 end
 
 function CatererFu:OnTooltipUpdate()
-	Tablet:SetTitle(self.name)
+	Tablet:SetTitle(self.title)
 	Tablet:SetTitleColor(0.41, 0.80, 0.94)
 	local cat1 = Tablet:AddCategory('columns', 2)
-	cat1:AddLine('text', L["Food"]..':', 'text2', Caterer.itemTable[1][Caterer.db.profile.tradeWhat[1]], 'func', self.ToggleOptions, 'arg1', self, 'arg2', 'tradeWhat', 'arg3', 1)
-	cat1:AddLine('text', L["Water"]..':', 'text2', Caterer.itemTable[2][Caterer.db.profile.tradeWhat[2]], 'func', self.ToggleOptions, 'arg1', self, 'arg2', 'tradeWhat', 'arg3', 2)
+	cat1:AddLine('text', L["Food"]..':', 'text2', Caterer.itemTable[1][Caterer.db.profile.tradeWhat[1]], 'func', 'ToggleOptions', 'arg1', self, 'arg2', 'tradeWhat', 'arg3', 1)
+	cat1:AddLine('text', L["Water"]..':', 'text2', Caterer.itemTable[2][Caterer.db.profile.tradeWhat[2]], 'func', 'ToggleOptions', 'arg1', self, 'arg2', 'tradeWhat', 'arg3', 2)
 	if Caterer.db.profile.tooltip.classes then
-		local cat2_name = L["Class settings"]
 		local cat2 = Tablet:AddCategory('columns', 3,
-			'text', cat2_name,
-			'func', 'ToggleCategory', 'arg1', self, 'arg2', cat2_name,
+			'text', L["Class settings"],
+			'func', 'ToggleOptions', 'arg1', self, 'arg2', 'category', 'arg3', 'classSettings',
 			'textR', 1, 'textG', .823529, 'textB', 0,
 			'showWithoutChildren', true,
 			'checked', true, 'hasCheck', true,
-			'checkIcon', self.db.profile.hiddenCategory[cat2_name] and 'Interface\\Buttons\\UI-PlusButton-Up' or 'Interface\\Buttons\\UI-MinusButton-Up'
+			'checkIcon', self.db.profile.hiddenCategory['classSettings'] and 'Interface\\Buttons\\UI-PlusButton-Up' or 'Interface\\Buttons\\UI-MinusButton-Up'
 		)
-		if not self.db.profile.hiddenCategory[cat2_name] then
+		if not self.db.profile.hiddenCategory['classSettings'] then
 			cat2:AddLine('text', L["Class"], 'text2', L["Food"], 'text3', L["Water"], 'justify3', 'CENTER')
 			for class, count in pairs(Caterer.db.profile.tradeCount) do
 				local name = Caterer.options.args.filter.args.quantity.args[string.lower(class)].name
@@ -91,7 +89,7 @@ function CatererFu:OnTooltipUpdate()
 			'text2R', v and 0 or 1,
 			'text2G', v and 1 or 0,
 			'text2B', 0,
-			'func', self.ToggleOptions, 'arg1', self, 'arg2', 'tradeFilter', 'arg3', name
+			'func', 'ToggleOptions', 'arg1', self, 'arg2', 'tradeFilter', 'arg3', name
 		)
 	end
 	local cat4 = Tablet:AddCategory('columns', 2)
@@ -100,24 +98,23 @@ function CatererFu:OnTooltipUpdate()
 		'text2R', Caterer.db.profile.whisperRequest and 0 or 1,
 		'text2G', Caterer.db.profile.whisperRequest and 1 or 0,
 		'text2B', 0,
-		'func', self.ToggleOptions, 'arg1', self, 'arg2', 'whisperRequest'
+		'func', 'ToggleOptions', 'arg1', self, 'arg2', 'whisperRequest'
 	)
 	if Caterer.db.profile.tooltip.exceptionList then
-		local cat5_name = L["List of exceptions"]
-		local cat5 = Tablet:AddCategory('id', cat5_name, 'columns', 3,
-			'text', cat5_name,
-			'func', 'ToggleCategory', 'arg1', self, 'arg2', cat5_name,
+		local cat5 = Tablet:AddCategory('columns', 3,
+			'text', L["List of exceptions"],
+			'func', 'ToggleOptions', 'arg1', self, 'arg2', 'category', 'arg3', 'exceptionList',
 			'font', GameTooltipHeaderText,
 			'textR', 1, 'textG', .823529, 'textB', 0,
 			'showWithoutChildren', true,
 			'checked', true, 'hasCheck', true,
-			'checkIcon', self.db.profile.hiddenCategory[cat5_name] and 'Interface\\Buttons\\UI-PlusButton-Up' or 'Interface\\Buttons\\UI-MinusButton-Up'
+			'checkIcon', self.db.profile.hiddenCategory['exceptionList'] and 'Interface\\Buttons\\UI-PlusButton-Up' or 'Interface\\Buttons\\UI-MinusButton-Up'
 		)
-		if not self.db.profile.hiddenCategory[cat5_name] then
+		if not self.db.profile.hiddenCategory['exceptionList'] then
 			if next(Caterer.db.profile.exceptionList) then
 				cat5:AddLine('text', L["Player"], 'text2', L["Food"], 'text3', L["Water"], 'justify3', 'CENTER')
 				for name, count in pairs(Caterer.db.profile.exceptionList) do
-					cat5:AddLine('text', name, 'textR', .75, 'textG', 1, 'textB', 1, 'text2', count[1], 'text3', count[2], 'justify3', 'CENTER', 'func', Caterer.RemovePlayer, 'arg1', Caterer, 'arg2', name)
+					cat5:AddLine('text', name, 'textR', .75, 'textG', 1, 'textB', 1, 'text2', count[1], 'text3', count[2], 'justify3', 'CENTER', 'func', 'RemovePlayer', 'arg1', Caterer, 'arg2', name)
 				end
 			else
 				cat5:AddLine('text', L["The list is empty."])
@@ -147,14 +144,12 @@ end
 	Shared Functions
 -----------------------------------------------------------------------------------]]
 
-function CatererFu:ToggleCategory(category)
-	self.db.profile.hiddenCategory[category] = not self.db.profile.hiddenCategory[category]
-	self:UpdateTooltip()
-end
-
 function CatererFu:ToggleOptions(arg2, arg3) -- arg1 = self
 	local value, curKey, newKey
-	if arg2 == 'tradeFilter' then
+	if arg2 == 'category' then
+		self.db.profile.hiddenCategory[arg3] = not self.db.profile.hiddenCategory[arg3]
+		self:UpdateTooltip()
+	elseif arg2 == 'tradeFilter' then
 		value = Caterer.db.profile[arg2][arg3]
 		Caterer.db.profile[arg2][arg3] = not value
 	elseif arg2 == 'whisperRequest' then
