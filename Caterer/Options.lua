@@ -39,7 +39,7 @@ Caterer.options = {
 							get = function() return Caterer.db.profile.tooltip.classes end,
 							set = function(v)
 								Caterer.db.profile.tooltip.classes = v
-								Caterer:TriggerEvent('Caterer_CLASS_UPDATE')
+								Caterer:TriggerEvent('Caterer_OPTIONS_UPDATE')
 							end,
 						}
 					}
@@ -118,7 +118,10 @@ Caterer.options = {
 			name = L["Whisper requests"],
 			desc = L["Toggle whisper requests."],
 			get = function() return Caterer.db.profile.whisperRequest end,
-			set = function(v) Caterer.db.profile.whisperRequest = v end,
+			set = function(v)
+				Caterer.db.profile.whisperRequest = v
+				Caterer:TriggerEvent('Caterer_OPTIONS_UPDATE')
+			end,
 		},
 		resetdb = {
 			order = 5,
@@ -142,7 +145,10 @@ for k, trade_name in pairs(trades) do
 		name = L[trade_name],
 		desc = L[string.format("Toggle trade with %s.", string.lower(trade_name))],
 		get = function() return Caterer.db.profile.tradeFilter[trade] end,
-		set = function(v) Caterer.db.profile.tradeFilter[trade] = v end,
+		set = function(v)
+			Caterer.db.profile.tradeFilter[trade] = v
+			Caterer:TriggerEvent('Caterer_OPTIONS_UPDATE')
+		end,
 	}
 end
 
@@ -183,7 +189,7 @@ for i = 1, 2 do -- 1 - food, 2 - water
 				get = function() return Caterer.db.profile.tradeCount[string.upper(class)][itemType] end,
 				set = function(v)
 					Caterer.db.profile.tradeCount[string.upper(class)][itemType] = v
-					Caterer:TriggerEvent('Caterer_CLASS_UPDATE')
+					Caterer:TriggerEvent('Caterer_OPTIONS_UPDATE')
 				end,
 				validate = {'0', '20', '40', '60'}
 			}

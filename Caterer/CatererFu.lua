@@ -46,12 +46,13 @@ end
 function CatererFu:OnEnable()
 	self:RegisterEvent('BAG_UPDATE', 'OnTextUpdate')
 	self:RegisterEvent('Caterer_ITEMS_UPDATE', 'OnTextUpdate')
-	self:RegisterEvent('Caterer_CLASS_UPDATE', 'OnDataUpdate')
+	self:RegisterEvent('Caterer_OPTIONS_UPDATE', 'OnDataUpdate')
 	self:RegisterEvent('Caterer_LIST_UPDATE', 'OnDataUpdate')
 	self:RegisterEvent('Caterer_RESETDB', 'OnDataUpdate')
 end
 
 function CatererFu:OnTextUpdate()
+	if self:IsTooltipDetached() then self:UpdateTooltip() end
 	local foodCount = Caterer:GetNumItems(Caterer.db.profile.tradeWhat[1])
 	local waterCount = Caterer:GetNumItems(Caterer.db.profile.tradeWhat[2])
 	local food = string.format('|cff%s%d|r', Crayon:GetThresholdHexColor(foodCount, 0, 100, 200, 300, 400), foodCount)
@@ -126,7 +127,7 @@ function CatererFu:OnTooltipUpdate()
 end
 
 function CatererFu:OnDataUpdate()
-	self:UpdateTooltip()
+	if self:IsTooltipDetached() then self:UpdateTooltip() end
 end
 
 function CatererFu:OnClick()

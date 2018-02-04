@@ -61,7 +61,7 @@ function Caterer:OnInitialize()
 	self:RegisterDefaults('profile', defaults)
 	self:RegisterChatCommand({'/caterer', '/cater', '/cat'}, self.options)
 	
-	--Popup Box if player class not mage
+	-- Popup Box if player class not mage
 	StaticPopupDialogs['CATERER_NOT_MAGE'] = {
 		text = string.format(L["Attention! Addon %s is not designed for your class. It must be disabled."], '|cff69CCF0Caterer|r'),
 		button1 = DISABLE,
@@ -103,8 +103,8 @@ function Caterer:TRADE_SHOW()
 	if not performTrade then return end
 	local _, tradeClass = UnitClass('NPC')
 	if tradeClass == 'MAGE' then
-		SendChatMessage('[Caterer] '..L["Make yourself your own water."]..' :)', 'WHISPER', nil, UnitName('NPC'))
-		return CloseTrade()
+		CloseTrade()
+		return SendChatMessage('[Caterer] '..L["Make yourself your own water."]..' :)', 'WHISPER', nil, UnitName('NPC'))
 	end
 	
 	local count
@@ -224,8 +224,8 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 		if tonumber(slotCount) == stackSize then
 			PickupContainerItem(bag, slot)
 			if CursorHasItem then
-				local slot = TradeFrame_GetAvailableSlot() -- Blizzard function
-				ClickTradeButton(slot)
+				local tradeSlot = TradeFrame_GetAvailableSlot() -- Blizzard function
+				ClickTradeButton(tradeSlot)
 				count = count - stackSize
 			else
 				return self:Print('|cffff9966'..L["Had a problem picking things up!"]..'|r')
@@ -247,7 +247,7 @@ function Caterer:GetNumItems(itemID)
 				local itemLink = GetContainerItemLink(bag, slot)
 				if itemLink then
 					local slotID = self:GetItemID(itemLink)
-					if slotID == tonumber(itemID) then
+					if slotID == itemID then
 						linkForPrint = itemLink
 						local _, itemCount = GetContainerItemInfo(bag, slot)
 						totalCount = totalCount + itemCount
