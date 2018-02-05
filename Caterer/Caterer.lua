@@ -13,8 +13,10 @@ Caterer = AceLibrary('AceAddon-2.0'):new('AceConsole-2.0', 'AceEvent-2.0', 'AceD
 
 local L = AceLibrary('AceLocale-2.2'):new('Caterer')
 local target, linkForPrint, whisperMode, whisperCount
+local _, NPCClass = UnitClass('NPC')
 local defaults = {
 	exceptionList = {},
+	blackList = {},
 	whisperRequest = false,
 	-- {food, water}
 	tradeWhat = {'22895', '8079'},
@@ -101,20 +103,15 @@ function Caterer:TRADE_SHOW()
 	if self:IsEventRegistered('UI_ERROR_MESSAGE') then self:UnregisterEvent('UI_ERROR_MESSAGE') end
 	local performTrade = self:CheckTheTrade()
 	if not performTrade then return end
-	local _, tradeClass = UnitClass('NPC')
-	if tradeClass == 'MAGE' then
-		CloseTrade()
-		return SendChatMessage('[Caterer] '..L["Make yourself your own water."]..' :)', 'WHISPER', nil, UnitName('NPC'))
-	end
 	
 	local count
 	local item = self.db.profile.tradeWhat
 	if whisperMode then
 		count = whisperCount
-	elseif self.db.profile.exceptionList[UnitName('NPC')] then
-		count = self.db.profile.exceptionList[UnitName('NPC')]
+	elseif self.db.profile.exceptionList[string.lower(UnitName('NPC'))] then
+		count = self.db.profile.exceptionList[string.lower(UnitName('NPC'))]
 	else
-		count = self.db.profile.tradeCount[tradeClass]
+		count = self.db.profile.tradeCount[NPCClass]
 	end
 	for i = 1, 2 do
 		if count[i] then
@@ -175,6 +172,17 @@ end
 
 function Caterer:CheckTheTrade()
 	-- Check to see whether or not we should execute the trade.
+	if NPCClass == 'MAGE' then
+		SendChatMessage('[Caterer] '..L["Make yourself your own water."]..' :)', 'WHISPER', nil, UnitName('NPC'))
+		CloseTrade()
+	end	
+	for _, name in pairs(self.db.profile.blackList) do
+		if name == string.lower(UnitName('NPC')) then
+			SendChatMessage('[Caterer] '..L["You are on my blacklist."], 'WHISPER', nil, UnitName('NPC'))
+			CloseTrade()
+		end
+	end
+
 	local NPCInGroup, NPCInMyGuild, NPCInFriendList
 	
 	if UnitInParty('NPC') or UnitInRaid('NPC') then
@@ -265,4 +273,8 @@ function Caterer:GetItemID(link)
 	
 	local _, _, itemID = string.find(link, 'item:(%d+):')
 	return tonumber(itemID)
+end
+
+function Caterer:FirstToUpper(str) -- first character UPPER case
+    return string.gsub(str, '^%l', string.upper)
 end

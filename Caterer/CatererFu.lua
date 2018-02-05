@@ -116,7 +116,7 @@ function CatererFu:OnTooltipUpdate()
 			if next(Caterer.db.profile.exceptionList) then
 				cat5:AddLine('text', L["Player"], 'text2', L["Food"], 'text3', L["Water"], 'justify3', 'CENTER')
 				for name, count in pairs(Caterer.db.profile.exceptionList) do
-					cat5:AddLine('text', name, 'textR', .75, 'textG', 1, 'textB', 1, 'text2', count[1], 'text3', count[2], 'justify3', 'CENTER', 'func', 'RemovePlayer', 'arg1', Caterer, 'arg2', name)
+					cat5:AddLine('text', Caterer:FirstToUpper(name), 'textR', .75, 'textG', 1, 'textB', 1, 'text2', count[1], 'text3', count[2], 'justify3', 'CENTER', 'func', 'RemovePlayer', 'arg1', Caterer, 'arg2', name, 'arg3', 'exceptionList')
 				end
 			else
 				cat5:AddLine('text', L["The list is empty."])

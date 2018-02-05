@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
-28 Jan 2018 - v 0.3.6 (Lichery)
+06 Feb 2018 - v 0.3.6 (Lichery)
 --------------------------------------------------------------------------------
++ Added blacklist.
 + Added food and water count to FuBar panel.
 + Added current food and water on tooltip minimap button.
 + Multiple optimization for code.

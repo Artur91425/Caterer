@@ -51,7 +51,7 @@ Caterer.options = {
 					desc = L["Trade options."],
 					args = {}
 				},
-				list = {
+				exceptionlist = {
 					order = 3,
 					type = 'group',
 					name = L["List of exceptions"],
@@ -60,27 +60,27 @@ Caterer.options = {
 						add = {
 							order = 1,
 							type = 'text',
-							name = L["Add/Edit"],
-							desc = string.format(L["Add/Edit a player to the exclusion list.\n\nUsage: <%s> <%s> <%s>"], L["player name"], L["amount of food"], L["amount of water"]),
+							name = L["Add"]..'/'..L["Edit"],
+							desc = string.format(L["%s a player."]..'\n\n'..L["Usage"]..': <%s> <%s> <%s>', L["Add"]..'/'..L["Edit"], L["player name"], L["amount of food"], L["amount of water"]),
 							usage = '<'..L["player name"]..'> <'..L["amount of food"]..'> <'..L["amount of water"]..'>',
 							get = false,
-							set = 'AddPlayer',
+							set = function(str, list) Caterer:AddPlayer(str, 'exceptionList') end,
 						},
 						remove = {
 							order = 2,
 							type = 'text',
 							name = L["Remove"],
-							desc = string.format(L["Remove a player from the exclusion list.\n\nUsage: <%s>"], L["player name"]),
+							desc = string.format(L["Remove a player from the list."]..'\n\n'..L["Usage"]..': <%s>', L["player name"]),
 							usage = '<'..L["player name"]..'>',
 							get = false,
-							set = 'RemovePlayer',
+							set = function(name, list) Caterer:RemovePlayer(name, 'exceptionList') end,
 						},
 						print = {
 							order = 3,
 							type = 'execute',
 							name = L["Print"],
-							desc = L["Printing an exclusion list."],
-							func = 'PrintList',
+							desc = L["Printing a list."],
+							func = function(list) Caterer:PrintList('exceptionList') end,
 						},
 						space2 = {
 							order = 4,
@@ -93,8 +93,12 @@ Caterer.options = {
 							name = L["Clear"],
 							desc = L["Completely clears the entire list."],
 							func = function()
-								Dewdrop:Close(1) -- hide, so as not to interfere
-								StaticPopup_Show('CATERER_CONFIRM_CLEAR')
+								if next(Caterer.db.profile.exceptionList) then
+									Dewdrop:Close(1) -- hide, so as not to interfere
+									StaticPopup_Show('CATERER_CONFIRM_CLEAR')
+								else
+									Caterer:Print(L["Nothing to clean."]..' '..L["The list is empty."])
+								end
 							end,
 						},
 						tooltip = {
@@ -106,6 +110,58 @@ Caterer.options = {
 							set = function(v)
 								Caterer.db.profile.tooltip.exceptionList = v
 								Caterer:TriggerEvent('Caterer_LIST_UPDATE')
+							end,
+						}
+					}
+				},
+				blacklist = {
+					order = 4,
+					type = 'group',
+					name = L["Blacklist"],
+					desc = L["Blacklist options."],
+					args = {
+						add = {
+							order = 1,
+							type = 'text',
+							name = L["Add"],
+							desc = string.format(L["%s a player."]..'\n\n'..L["Usage"]..': <%s>', L["Add"], L["player name"]),
+							usage = '<'..L["player name"]..'>',
+							get = false,
+							set = function(str, list) Caterer:AddPlayer(str, 'blackList') end,
+						},
+						remove = {
+							order = 2,
+							type = 'text',
+							name = L["Remove"],
+							desc = string.format(L["Remove a player from the list."]..'\n\n'..L["Usage"]..': <%s>', L["player name"]),
+							usage = '<'..L["player name"]..'>',
+							get = false,
+							set = function(name, list) Caterer:RemovePlayer(name, 'blackList') end,
+						},
+						print = {
+							order = 3,
+							type = 'execute',
+							name = L["Print"],
+							desc = L["Printing a list."],
+							func = function(list) Caterer:PrintList('blackList') end,
+						},
+						space2 = {
+							order = 4,
+							type = 'header',
+							name = ' ',
+						},
+						clear = {
+							order = 5,
+							type = 'execute',
+							name = L["Clear"],
+							desc = L["Completely clears the entire list."],
+							func = function()
+								if next(Caterer.db.profile.blackList) then
+									Dewdrop:Close(1) -- hide, so as not to interfere
+									StaticPopup_Show('CATERER_CONFIRM_CLEAR')
+								else
+									Caterer:Print(L["Nothing to clean."]..' '..L["The list is empty."])
+								end
 							end,
 						}
 					}
@@ -198,7 +254,7 @@ for i = 1, 2 do -- 1 - food, 2 - water
 end
 
 StaticPopupDialogs['CATERER_CONFIRM_CLEAR'] = {
-	text = L["Do you really want to clear list of exceptions?"],
+	text = L["Do you really want to clear this list?"],
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
@@ -227,46 +283,65 @@ StaticPopupDialogs['CATERER_CONFIRM_RESET'] = {
 	preferredIndex = 3
 }
 
-function Caterer:AddPlayer(str)
-	local _, _, name, food, water = string.find(str, '(%a+) (%d+) (%d+)')
-	if not (name and food and water) or math.mod(food, 20) ~= 0 or math.mod(water, 20) ~= 0 then
-		return self:Print(string.format(L["Expected string: '<%s> <%s> <%s>'. Note: the number must be a multiple of 20."], L["player name"], L["amount of food"], L["amount of water"]))
-	elseif food + water > 120 then
-		return self:Print(L["The total number of items should not exceed 120."])
-	elseif food + water == 0 then
-		return self:Print(L["The quantity for both items can not be zero."])
+function Caterer:AddPlayer(str, list)
+	if list == 'exceptionList' then
+		local _, _, name, food, water = string.find(str, '(%a+) (%d+) (%d+)')
+		if not (name and food and water) or math.mod(food, 20) ~= 0 or math.mod(water, 20) ~= 0 then
+			return self:Print(string.format(L["Expected string: '<%s> <%s> <%s>'. Note: the number must be a multiple of 20."], L["player name"], L["amount of food"], L["amount of water"]))
+		elseif food + water > 120 then
+			return self:Print(L["The total number of items should not exceed 120."])
+		elseif food + water == 0 then
+			return self:Print(L["The quantity for both items can not be zero."]..' '..L["If you want to ignore this player, then add it to the blacklist."])
+		end
+		
+		local type
+		if self.db.profile[list][string.lower(name)] then
+			type = '|cffDAA520'..L["edited"]..'|r'
+		else
+			type = '|cff00FF00'..L["added"]..'|r'
+		end
+		self.db.profile[list][string.lower(name)] = {}
+		table.insert(self.db.profile[list][string.lower(name)], food)
+		table.insert(self.db.profile[list][string.lower(name)], water)
+		self:Print(string.format(L["%s was successfully %s."], L["Player"]..' <|cffbfffff'..self:FirstToUpper(name)..'|r> ', type))
+		self:TriggerEvent('Caterer_LIST_UPDATE')
+	elseif list == 'blackList' then
+		local _, _, name = string.find(str, '(%a+)')
+		if not name then
+			return self:Print(string.format(L["The name of the player is expected."]))
+		end
+		table.insert(self.db.profile[list], string.lower(name))
+		self:Print(string.format(L["%s was successfully %s."], L["Player"]..' <|cffCD5C5C'..self:FirstToUpper(name)..'|r> ', '|cff00FF00'..L["added"]..'|r'))
 	end
-	
-	local type
-	if self.db.profile.exceptionList[name] then
-		type = '|cffDAA520'..L["edited"]..'|r'
-	else
-		type = '|cff00FF00'..L["added"]..'|r'
-	end
-	self.db.profile.exceptionList[name] = {}
-	table.insert(self.db.profile.exceptionList[name], food)
-	table.insert(self.db.profile.exceptionList[name], water)
-	self:Print(string.format(L["%s was successfully %s."], L["Player"]..' <|cffbfffff'..name..'|r> ', type))
-	self:TriggerEvent('Caterer_LIST_UPDATE')
 end
 
-function Caterer:RemovePlayer(name)
-	if not self.db.profile.exceptionList[name] then
+function Caterer:RemovePlayer(str, list)
+	local _, _, name = string.find(str, '(%a+)')
+	if not name then
+		return self:Print(string.format(L["The name of the player is expected."]))
+	elseif not self.db.profile[list][string.lower(name)] then
 		return self:Print(L["This player is not listed."])
 	end
 	
-	self.db.profile.exceptionList[name] = nil
-	self:Print(string.format(L["%s was successfully %s."], L["Player"]..' <|cffbfffff'..name..'|r> ', '|cffFF0000'..L["removed"]..'|r'))
+	self.db.profile[list][string.lower(name)] = nil
+	self:Print(string.format(L["%s was successfully %s."], L["Player"]..' <|cffbfffff'..self:FirstToUpper(name)..'|r> ', '|cffFF0000'..L["removed"]..'|r'))
 end
 
-function Caterer:PrintList()
-	if not next(self.db.profile.exceptionList) then
+function Caterer:PrintList(list)
+	if not next(self.db.profile[list]) then
 		return self:Print(L["The list is empty."])
 	end
 	
-	self:Print(L["List of exceptions"]..':')
-	ChatFrame1:AddMessage(string.format('[|cffbfffff%s|r] = {%s, %s}', L["player name"], L["Food"], L["Water"]))
-	for k, v in pairs(self.db.profile.exceptionList) do
-		ChatFrame1:AddMessage('[|cffbfffff'..k..'|r] = {'..v[1]..', '..v[2]..'}')
+	if list == 'exceptionList' then
+		self:Print(L["List of exceptions"]..':')
+		ChatFrame1:AddMessage(string.format('[|cffbfffff%s|r] = {%s, %s}', L["player name"], L["Food"], L["Water"]))
+		for name, count in pairs(self.db.profile[list]) do
+			ChatFrame1:AddMessage('[|cffbfffff'..self:FirstToUpper(name)..'|r] = {'..count[1]..', '..count[2]..'}')
+		end
+	elseif list == 'blackList' then
+		self:Print(L["Blacklist"]..':')
+		for _, name in pairs(self.db.profile[list]) do
+			ChatFrame1:AddMessage('|cffCD5C5C'..self:FirstToUpper(name))
+		end
 	end
 end
