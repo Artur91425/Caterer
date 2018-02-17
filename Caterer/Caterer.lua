@@ -84,7 +84,7 @@ function Caterer:OnInitialize()
 		StaticPopup_Show('CATERER_NOT_MAGE')
 	else
 		self:ToggleActive(true)
-		ChatFrame1:AddMessage('Caterer '..GetAddOnMetadata('Caterer', 'Version')..' '..L["loaded."], 0.41, 0.80, 0.94)
+		ChatFrame1:AddMessage('Caterer '..GetAddOnMetadata('Caterer', 'Version')..' '..L["loaded"]..'.', .41, .80, .94)
 	end
 end
 
@@ -113,7 +113,7 @@ function Caterer:TRADE_SHOW()
 	else
 		count = self.db.profile.tradeCount[NPCClass]
 	end
-	for i = 1, 2 do
+	for i = 1, table.getn(self.itemTable) do
 		if count[i] then
 			self:DoTheTrade(tonumber(item[i]), tonumber(count[i]), i)
 		end
@@ -231,13 +231,10 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 		local _, _, bag, slot, slotCount = string.find(v, 'bag: (%d), slot: (%d+), count: (%d+)')
 		if tonumber(slotCount) == stackSize then
 			PickupContainerItem(bag, slot)
-			if CursorHasItem then
-				local tradeSlot = TradeFrame_GetAvailableSlot() -- Blizzard function
-				ClickTradeButton(tradeSlot)
-				count = count - stackSize
-			else
-				return self:Print('|cffff9966'..L["Had a problem picking things up!"]..'|r')
-			end
+			if not CursorHasItem then return self:Print('|cffff9966'..L["Had a problem picking things up!"]..'|r') end
+			local tradeSlot = TradeFrame_GetAvailableSlot() -- Blizzard function
+			ClickTradeButton(tradeSlot)
+			count = count - stackSize
 			if count == 0 then break end
 		end
 	end
@@ -245,19 +242,20 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 end
 
 function Caterer:GetNumItems(itemID)
+	local size, itemLink, slotID, itemCount
 	local totalCount = 0
 	local slotArray = {}
 	
 	for bag = 4, 0, -1 do
-		local size = GetContainerNumSlots(bag)
+		size = GetContainerNumSlots(bag)
 		if size then
 			for slot = size, 1, -1 do
-				local itemLink = GetContainerItemLink(bag, slot)
+				itemLink = GetContainerItemLink(bag, slot)
 				if itemLink then
-					local slotID = self:GetItemID(itemLink)
+					slotID = self:GetItemID(itemLink)
 					if slotID == itemID then
 						linkForPrint = itemLink
-						local _, itemCount = GetContainerItemInfo(bag, slot)
+						_, itemCount = GetContainerItemInfo(bag, slot)
 						totalCount = totalCount + itemCount
 						table.insert(slotArray, 'bag: '..bag..', slot: '..slot..', count: '..itemCount)
 					end

@@ -1,3 +1,7 @@
+--[[---------------------------------------------------------------------------------
+	Locals
+------------------------------------------------------------------------------------]]
+
 local L = AceLibrary('AceLocale-2.2'):new('Caterer')
 local BC = AceLibrary('Babble-Class-2.2')
 local Dewdrop = AceLibrary('Dewdrop-2.0')
@@ -10,6 +14,10 @@ local trades = {
 	other = 'Other players'
 }
 local i = 0
+
+--[[---------------------------------------------------------------------------------
+	Options table
+------------------------------------------------------------------------------------]]
 
 Caterer.options = {
 	type = 'group',
@@ -95,7 +103,7 @@ Caterer.options = {
 							func = function()
 								if next(Caterer.db.profile.exceptionList) then
 									Dewdrop:Close(1) -- hide, so as not to interfere
-									StaticPopup_Show('CATERER_CONFIRM_CLEAR')
+									Caterer:ClearList('exceptionList')
 								else
 									Caterer:Print(L["Nothing to clean."]..' '..L["The list is empty."])
 								end
@@ -127,7 +135,7 @@ Caterer.options = {
 							desc = string.format(L["%s a player."]..'\n\n'..L["Usage"]..': <%s>', L["Add"], L["player name"]),
 							usage = '<'..L["player name"]..'>',
 							get = false,
-							set = function(str, list) Caterer:AddPlayer(str, 'blackList') end,
+							set = function(str) Caterer:AddPlayer(str, 'blackList') end,
 						},
 						remove = {
 							order = 2,
@@ -136,14 +144,14 @@ Caterer.options = {
 							desc = string.format(L["Remove a player from the list."]..'\n\n'..L["Usage"]..': <%s>', L["player name"]),
 							usage = '<'..L["player name"]..'>',
 							get = false,
-							set = function(name, list) Caterer:RemovePlayer(name, 'blackList') end,
+							set = function(name) Caterer:RemovePlayer(name, 'blackList') end,
 						},
 						print = {
 							order = 3,
 							type = 'execute',
 							name = L["Print"],
 							desc = L["Printing a list."],
-							func = function(list) Caterer:PrintList('blackList') end,
+							func = function() Caterer:PrintList('blackList') end,
 						},
 						space2 = {
 							order = 4,
@@ -156,9 +164,9 @@ Caterer.options = {
 							name = L["Clear"],
 							desc = L["Completely clears the entire list."],
 							func = function()
-								if next(Caterer.db.profile.blackList) then
+								if Caterer.db.profile.blackList[1] then
 									Dewdrop:Close(1) -- hide, so as not to interfere
-									StaticPopup_Show('CATERER_CONFIRM_CLEAR')
+									Caterer:ClearList('blackList')
 								else
 									Caterer:Print(L["Nothing to clean."]..' '..L["The list is empty."])
 								end
@@ -218,7 +226,7 @@ for k, class in pairs(classes) do
 	}
 end
 
-for i = 1, 2 do -- 1 - food, 2 - water
+for i = 1, table.getn(Caterer.itemTable) do -- 1 - food, 2 - water
     local name
     local itemType = i
     if i == 1 then name = 'Food' else name = 'Water' end
@@ -253,35 +261,9 @@ for i = 1, 2 do -- 1 - food, 2 - water
 	end
 end
 
-StaticPopupDialogs['CATERER_CONFIRM_CLEAR'] = {
-	text = L["Do you really want to clear this list?"],
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function()
-		Caterer.db.profile.exceptionList = {}
-		Caterer:TriggerEvent('Caterer_LIST_UPDATE')
-		Caterer:Print(L["The list has been successfully cleared."])
-	end,
-	timeout = 0,
-	whileDead = true,
-	hideOnEscape = false,
-	preferredIndex = 3
-}
-
-StaticPopupDialogs['CATERER_CONFIRM_RESET'] = {
-	text = L["Do you really want to reset the settings to their default values?"],
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function()
-		Caterer:ResetDB('profile')
-		Caterer:TriggerEvent('Caterer_RESETDB')
-		Caterer:Print(L["All settings are reset to default value."])
-	end,
-	timeout = 0,
-	whileDead = true,
-	hideOnEscape = false,
-	preferredIndex = 3
-}
+--[[--------------------------------------------------------------------------------
+	Shared Functions
+-----------------------------------------------------------------------------------]]
 
 function Caterer:AddPlayer(str, list)
 	if list == 'exceptionList' then
@@ -345,3 +327,36 @@ function Caterer:PrintList(list)
 		end
 	end
 end
+
+function Caterer:ClearList(list)
+	StaticPopup_Show('CATERER_CONFIRM_CLEAR')
+	StaticPopupDialogs['CATERER_CONFIRM_CLEAR'] = {
+		text = L["Do you really want to clear this list?"],
+		button1 = YES,
+		button2 = NO,
+		OnAccept = function()
+			self.db.profile[list] = {}
+			if list == 'exceptionList' then self:TriggerEvent('Caterer_LIST_UPDATE') end
+			self:Print(L["The list has been successfully cleared."])
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = false,
+		preferredIndex = 3
+	}
+end
+
+StaticPopupDialogs['CATERER_CONFIRM_RESET'] = {
+	text = L["Do you really want to reset the settings to their default values?"],
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		Caterer:ResetDB('profile')
+		Caterer:TriggerEvent('Caterer_RESETDB')
+		Caterer:Print(L["All settings are reset to default value."])
+	end,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = false,
+	preferredIndex = 3
+}

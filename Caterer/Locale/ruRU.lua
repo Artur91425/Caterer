@@ -2,8 +2,10 @@ local L = AceLibrary('AceLocale-2.2'):new('Caterer')
 
 L:RegisterTranslations('ruRU', function() return {
 	
+	["enabled"] = "включен",
+	["disabled"] = "отключен",
 	["Attention! Addon %s is not designed for your class. It must be disabled."] = "Внимание! Аддон %s не предназначен для вашего класса. Он должен быть отключен.",
-	["loaded."] = "загружен.",
+	["loaded"] = "загружен",
 	["LeftClick to toggle addon.\nRightClick to open dropdown menu.\nLeftClick on the point tooltip to quickly manage the addon."] = "Нажмите левую кнопку мыши, чтобы Вкл./Выкл. аддон.\nНажмите правую кнопку мыши, чтобы открыть меню.\nНажмите левую кнопку мыши на пункт в подсказке для быстрого управления аддоном.",
 	["Trade with friends"] = "Обмен с друзьями",
 	["Trade with group"] = "Обмен с членами группы/рейда",

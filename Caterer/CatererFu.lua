@@ -61,6 +61,8 @@ function CatererFu:OnTextUpdate()
 end
 
 function CatererFu:OnTooltipUpdate()
+	if not Caterer:IsActive() then return end
+	
 	Tablet:SetTitle(self.title)
 	Tablet:SetTitleColor(0.41, 0.80, 0.94)
 	local cat1 = Tablet:AddCategory('columns', 2)
@@ -134,10 +136,12 @@ function CatererFu:OnClick()
 	if Caterer:IsActive() then
 		getglobal(this:GetName()..'Icon'):SetVertexColor(.3, .3, .3)
 		Caterer:ToggleActive(false)
+		ChatFrame1:AddMessage('|cff69CCF0Caterer |cffFF0000'..L["disabled"]..'|r.', .41, .80, .94)
 		self:UpdateTooltip()
 	else
 		getglobal(this:GetName()..'Icon'):SetVertexColor(1, 1, 1)
 		Caterer:ToggleActive(true)
+		ChatFrame1:AddMessage('|cff69CCF0Caterer |cff00FF00'..L["enabled"]..'|r.', .41, .80, .94)
 		self:UpdateTooltip()
     end
 end

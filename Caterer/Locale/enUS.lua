@@ -2,8 +2,10 @@ local L = AceLibrary('AceLocale-2.2'):new('Caterer')
 
 L:RegisterTranslations('enUS', function() return {
 	
+	["enabled"] = true,
+	["disabled"] = true,
 	["Attention! Addon %s is not designed for your class. It must be disabled."] = true,
-	["loaded."] = true,
+	["loaded"] = true,
 	["LeftClick to toggle addon.\nRightClick to open dropdown menu.\nLeftClick on the point tooltip to quickly manage the addon."] = true,
 	["Trade with friends"] = true,
 	["Trade with group"] = "Trade with group/raid members",
