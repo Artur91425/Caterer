@@ -226,7 +226,7 @@ for k, class in pairs(classes) do
 	}
 end
 
-for i = 1, table.getn(Caterer.itemTable) do -- 1 - food, 2 - water
+for i in pairs(Caterer.itemTable) do -- 1 - food, 2 - water
     local name
     local itemType = i
     if i == 1 then name = 'Food' else name = 'Water' end

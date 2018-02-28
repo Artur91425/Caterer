@@ -12,8 +12,7 @@ Caterer = AceLibrary('AceAddon-2.0'):new('AceConsole-2.0', 'AceEvent-2.0', 'AceD
 ------------------------------------------------------------------------------------]]
 
 local L = AceLibrary('AceLocale-2.2'):new('Caterer')
-local target, linkForPrint, whisperMode, whisperCount
-local _, NPCClass = UnitClass('NPC')
+local target, linkForPrint, whisperMode, whisperCount, NPCClass
 local defaults = {
 	exceptionList = {},
 	blackList = {},
@@ -101,22 +100,20 @@ end
 
 function Caterer:TRADE_SHOW()
 	if self:IsEventRegistered('UI_ERROR_MESSAGE') then self:UnregisterEvent('UI_ERROR_MESSAGE') end
+	_, NPCClass = UnitClass('NPC')
 	local performTrade = self:CheckTheTrade()
 	if not performTrade then return end
 	
-	local count
+	local count = self.db.profile.tradeCount[NPCClass]
 	local item = self.db.profile.tradeWhat
 	if whisperMode then
 		count = whisperCount
 	elseif self.db.profile.exceptionList[string.lower(UnitName('NPC'))] then
 		count = self.db.profile.exceptionList[string.lower(UnitName('NPC'))]
-	else
-		count = self.db.profile.tradeCount[NPCClass]
 	end
-	for i = 1, table.getn(self.itemTable) do
-		if count[i] then
-			self:DoTheTrade(tonumber(item[i]), tonumber(count[i]), i)
-		end
+	for itemType in pairs(self.itemTable) do
+		if not count[itemType] then break end
+		self:DoTheTrade(tonumber(item[itemType]), tonumber(count[itemType]), itemType)
 	end
 end
 
