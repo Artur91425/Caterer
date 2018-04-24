@@ -3,6 +3,13 @@
 This addon fully automates the trading of food and water.  
 ![caterer](https://user-images.githubusercontent.com/24303693/35484668-1525f4ba-0464-11e8-8f51-38f96a587666.jpg)
 
+## Installation
+1. Download **[Latest Version](https://github.com/Lichery/Caterer/archive/master.zip)**
+2. Unpack the Zip file
+3. Rename the folder "Caterer-master" to "Caterer"
+4. Copy "Caterer" into Wow-Directory\Interface\AddOns\
+5. Restart WoW
+
 ## Setting addon
 First you need to configure the addon. This can be done very quickly.
 1. Trade Filter  
