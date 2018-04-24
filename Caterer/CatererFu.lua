@@ -64,7 +64,7 @@ function CatererFu:OnTooltipUpdate()
 	if not Caterer:IsActive() then return end
 	
 	Tablet:SetTitle(self.title)
-	Tablet:SetTitleColor(0.41, 0.80, 0.94)
+	Tablet:SetTitleColor(.41, .80, .94)
 	local cat1 = Tablet:AddCategory('columns', 2)
 	cat1:AddLine('text', L["Food"]..':', 'text2', Caterer.itemTable[1][Caterer.db.profile.tradeWhat[1]], 'func', 'ToggleOptions', 'arg1', self, 'arg2', 'tradeWhat', 'arg3', 1)
 	cat1:AddLine('text', L["Water"]..':', 'text2', Caterer.itemTable[2][Caterer.db.profile.tradeWhat[2]], 'func', 'ToggleOptions', 'arg1', self, 'arg2', 'tradeWhat', 'arg3', 2)

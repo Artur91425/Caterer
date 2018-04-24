@@ -270,6 +270,8 @@ function Caterer:AddPlayer(str, list)
 		local _, _, name, food, water = string.find(str, '(%a+) (%d+) (%d+)')
 		if not (name and food and water) or math.mod(food, 20) ~= 0 or math.mod(water, 20) ~= 0 then
 			return self:Print(string.format(L["Expected string: '<%s> <%s> <%s>'. Note: the number must be a multiple of 20."], L["player name"], L["amount of food"], L["amount of water"]))
+		elseif string.len(name) > 12 then
+			return self:Print(L["Enter the correct name."])
 		elseif food + water > 120 then
 			return self:Print(L["The total number of items should not exceed 120."])
 		elseif food + water == 0 then
@@ -290,7 +292,7 @@ function Caterer:AddPlayer(str, list)
 	elseif list == 'blackList' then
 		local _, _, name = string.find(str, '(%a+)')
 		if not name then
-			return self:Print(string.format(L["The name of the player is expected."]))
+			return self:Print(L["The name of the player is expected."])
 		end
 		table.insert(self.db.profile[list], string.lower(name))
 		self:Print(string.format(L["%s was successfully %s."], L["Player"]..' <|cffCD5C5C'..self:FirstToUpper(name)..'|r> ', '|cff00FF00'..L["added"]..'|r'))
@@ -300,7 +302,7 @@ end
 function Caterer:RemovePlayer(str, list)
 	local _, _, name = string.find(str, '(%a+)')
 	if not name then
-		return self:Print(string.format(L["The name of the player is expected."]))
+		return self:Print(L["The name of the player is expected."])
 	elseif not self.db.profile[list][string.lower(name)] then
 		return self:Print(L["This player is not listed."])
 	end
@@ -329,7 +331,6 @@ function Caterer:PrintList(list)
 end
 
 function Caterer:ClearList(list)
-	StaticPopup_Show('CATERER_CONFIRM_CLEAR')
 	StaticPopupDialogs['CATERER_CONFIRM_CLEAR'] = {
 		text = L["Do you really want to clear this list?"],
 		button1 = YES,
@@ -344,6 +345,7 @@ function Caterer:ClearList(list)
 		hideOnEscape = false,
 		preferredIndex = 3
 	}
+	StaticPopup_Show('CATERER_CONFIRM_CLEAR')
 end
 
 StaticPopupDialogs['CATERER_CONFIRM_RESET'] = {

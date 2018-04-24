@@ -8,7 +8,7 @@
 Caterer = AceLibrary('AceAddon-2.0'):new('AceConsole-2.0', 'AceEvent-2.0', 'AceDB-2.0')
 
 --[[---------------------------------------------------------------------------------
-	Locals
+	Variables
 ------------------------------------------------------------------------------------]]
 
 local L = AceLibrary('AceLocale-2.2'):new('Caterer')
@@ -104,8 +104,8 @@ function Caterer:TRADE_SHOW()
 	local performTrade = self:CheckTheTrade()
 	if not performTrade then return end
 	
-	local count = self.db.profile.tradeCount[NPCClass]
 	local item = self.db.profile.tradeWhat
+	local count = self.db.profile.tradeCount[NPCClass]
 	if whisperMode then
 		count = whisperCount
 	elseif self.db.profile.exceptionList[string.lower(UnitName('NPC'))] then
@@ -131,8 +131,7 @@ function Caterer:CHAT_MSG_WHISPER(arg1, arg2)
 	local _, _, prefix, foodCount, waterCount = string.find(arg1, '(#cat) (.+) (.+)')
 	if not prefix then return end
 
-	foodCount = tonumber(foodCount)
-	waterCount = tonumber(waterCount)
+	foodCount, waterCount = tonumber(foodCount), tonumber(waterCount)
 	if not self.db.profile.whisperRequest then
 		return SendChatMessage('[Caterer] '..L["Service is temporarily disabled."], 'WHISPER', nil, arg2)
 	elseif not (foodCount and waterCount) or math.mod(foodCount, 20) ~= 0 or math.mod(waterCount, 20) ~= 0 then
@@ -171,37 +170,38 @@ function Caterer:CheckTheTrade()
 	-- Check to see whether or not we should execute the trade.
 	if NPCClass == 'MAGE' then
 		SendChatMessage('[Caterer] '..L["Make yourself your own water."]..' :)', 'WHISPER', nil, UnitName('NPC'))
-		CloseTrade()
+		return CloseTrade()
 	end	
 	for _, name in pairs(self.db.profile.blackList) do
 		if name == string.lower(UnitName('NPC')) then
 			SendChatMessage('[Caterer] '..L["You are on my blacklist."], 'WHISPER', nil, UnitName('NPC'))
-			CloseTrade()
+			return CloseTrade()
 		end
 	end
 
-	local NPCInGroup, NPCInMyGuild, NPCInFriendList
+	local UnitInGroup, UnitInMyGuild, UnitInFriendList
 	
 	if UnitInParty('NPC') or UnitInRaid('NPC') then
-		NPCInGroup = true
+		UnitInGroup = true
 	end
 	if IsInGuild() and GetGuildInfo('player') == GetGuildInfo('NPC') then
-		NPCInMyGuild = true
+		UnitInMyGuild = true
 	end
 	for i = 1, GetNumFriends() do
 		if UnitName('NPC') == GetFriendInfo(i) then
-			NPCInFriendList = true
+			UnitInFriendList = true
+			break
 		end
 	end
 	
-	if self.db.profile.tradeFilter.group and NPCInGroup then
+	if self.db.profile.tradeFilter.group and UnitInGroup then
 		return true
-	elseif self.db.profile.tradeFilter.guild and NPCInMyGuild then
+	elseif self.db.profile.tradeFilter.guild and UnitInMyGuild then
 		return true
-	elseif self.db.profile.tradeFilter.friends and NPCInFriendList then
+	elseif self.db.profile.tradeFilter.friends and UnitInFriendList then
 		return true
 	elseif self.db.profile.tradeFilter.other then
-		if NPCInGroup or NPCInMyGuild or NPCInFriendList then
+		if UnitInGroup or UnitInMyGuild or UnitInFriendList then
 			return false
 		else
 			return true
@@ -214,13 +214,10 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 	if not TradeFrame:IsVisible() or count == 0 then return end
 	linkForPrint = nil -- link clearing
 	local itemCount, slotArray = self:GetNumItems(itemID)
-	if itemCount < count and linkForPrint then
-		CloseTrade() 
-		return SendChatMessage(string.format(L["I can't complete the trade right now. I'm out of %s."], linkForPrint))
-	elseif not linkForPrint then
-		CloseTrade()
-		linkForPrint = '|cffffffff|Hitem:'..itemID..':0:0:0:0:0:0:0:0|h['..self.itemTable[itemType][tostring(itemID)]..']|h|r'
-		return SendChatMessage(string.format(L["Trade is impossible, no %s."], linkForPrint))
+	if itemCount < count then
+		if not linkForPrint then linkForPrint = '|cffffffff|Hitem:'..itemID..':0:0:0:0:0:0:0:0|h['..self.itemTable[itemType][tostring(itemID)]..']|h|r' end
+		SendChatMessage(string.format(L["I can't complete the trade right now. I'm out of %s."], linkForPrint))
+		return CloseTrade()
 	end
 
 	local stackSize = 20
@@ -239,6 +236,7 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 end
 
 function Caterer:GetNumItems(itemID)
+	if type(itemID) == 'string' then itemID = tonumber(itemID) end
 	local size, itemLink, slotID, itemCount
 	local totalCount = 0
 	local slotArray = {}
