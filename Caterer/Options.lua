@@ -227,10 +227,10 @@ for k, class in pairs(classes) do
 end
 
 for i in pairs(Caterer.itemTable) do -- 1 - food, 2 - water
-    local name
-    local itemType = i
-    if i == 1 then name = 'Food' else name = 'Water' end
-    Caterer.options.args[string.lower(name)] = {
+  local name
+  local itemType = i
+  if i == 1 then name = 'Food' else name = 'Water' end
+  Caterer.options.args[string.lower(name)] = {
 		order = itemType,
 		type = 'text',
 		name = L[name],
@@ -284,9 +284,7 @@ function Caterer:AddPlayer(str, list)
 		else
 			type = '|cff00FF00'..L["added"]..'|r'
 		end
-		self.db.profile[list][string.lower(name)] = {}
-		table.insert(self.db.profile[list][string.lower(name)], food)
-		table.insert(self.db.profile[list][string.lower(name)], water)
+		self.db.profile[list][string.lower(name)] = {food, water}
 		self:Print(string.format(L["%s was successfully %s."], L["Player"]..' <|cffbfffff'..self:FirstToUpper(name)..'|r> ', type))
 		self:TriggerEvent('Caterer_LIST_UPDATE')
 	elseif list == 'blackList' then

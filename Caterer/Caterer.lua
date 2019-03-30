@@ -128,7 +128,7 @@ end
 function Caterer:CHAT_MSG_WHISPER(arg1, arg2)
 	-- arg1 - Message received
 	-- arg2 - Author
-	local _, _, prefix, foodCount, waterCount = string.find(arg1, '(#cat) (.+) (.+)')
+	local _, _, prefix, foodCount, waterCount = string.find(arg1, '(#cat) (%d+) (%d+)')
 	if not prefix then return end
 
 	foodCount, waterCount = tonumber(foodCount), tonumber(waterCount)
@@ -213,16 +213,16 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 	-- itemType: 1 - food, 2 - water
 	if not TradeFrame:IsVisible() or count == 0 then return end
 	linkForPrint = nil -- link clearing
-	local itemCount, slotArray = self:GetNumItems(itemID)
-	if itemCount < count then
+	local TotalItemCount, itemTable = self:GetNumItems(itemID)
+	if TotalItemCount < count then
 		if not linkForPrint then linkForPrint = '|cffffffff|Hitem:'..itemID..':0:0:0:0:0:0:0:0|h['..self.itemTable[itemType][tostring(itemID)]..']|h|r' end
 		SendChatMessage(string.format(L["I can't complete the trade right now. I'm out of %s."], linkForPrint))
 		return CloseTrade()
 	end
 
 	local stackSize = 20
-	for _, v in pairs(slotArray) do
-		local _, _, bag, slot, slotCount = string.find(v, 'bag: (%d), slot: (%d+), count: (%d+)')
+	for _, line in pairs(itemTable) do
+		local _, _, bag, slot, slotCount = string.find(line, 'bag: (%d), slot: (%d+), count: (%d+)')
 		if tonumber(slotCount) == stackSize then
 			PickupContainerItem(bag, slot)
 			if not CursorHasItem then return self:Print('|cffff9966'..L["Had a problem picking things up!"]..'|r') end
@@ -236,7 +236,7 @@ function Caterer:DoTheTrade(itemID, count, itemType)
 end
 
 function Caterer:GetNumItems(itemID)
-	if type(itemID) == 'string' then itemID = tonumber(itemID) end
+	if type(itemID) ~= 'number' then itemID = tonumber(itemID) end
 	local size, itemLink, slotID, itemCount
 	local totalCount = 0
 	local slotArray = {}
@@ -269,5 +269,5 @@ function Caterer:GetItemID(link)
 end
 
 function Caterer:FirstToUpper(str) -- first character UPPER case
-    return string.gsub(str, '^%l', string.upper)
+  return string.gsub(str, '^%l', string.upper)
 end
