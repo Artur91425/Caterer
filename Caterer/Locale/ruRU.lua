@@ -20,10 +20,20 @@ L:RegisterTranslations('ruRU', function() return {
 	--Food
 	["Conjured Cinnamon Roll"] = "Сотворенная плюшка с корицей",
 	["Conjured Sweet Roll"] = "Сотворенная сладкая булочка",
+	["Conjured Sourdough"] = "Сотворенный батон",
+	["Conjured Pumpernickel"] = "Сотворенный хлеб грубого помола",
+	["Conjured Rye"] = "Сотворенный ржаной хлеб",
+	["Conjured Bread"] = "Сотворенный хлеб",
+	["Conjured Muffin"] = "Сотворенный кекс",
 	--Water
 	["Conjured Crystal Water"] = "Сотворенная талая вода",
 	["Conjured Sparkling Water"] = "Сотворенная шипучка",
-	
+	["Conjured Mineral Water"] = "Сотворенная минеральная вода",
+	["Conjured Spring Water"] = "Сотворенная ключевая вода",
+	["Conjured Purified Water"] = "Сотворенная очищенная вода",
+	["Conjured Fresh Water"] = "Сотворенная свежая вода",
+	["Conjured Water"] = "Сотворенная вода",
+
 	--Options
 	["Food"] = "Еда",
 	["Set food for trades."] = "Установите еду для обмена.",

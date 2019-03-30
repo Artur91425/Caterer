@@ -163,9 +163,19 @@ function CatererFu:ToggleOptions(arg2, arg3) -- arg1 = self
 		Caterer.db.profile[arg2] = not value
 	elseif arg2 == 'tradeWhat' then
 		curKey = Caterer.db.profile[arg2][arg3]
-		newKey, value = next(Caterer.itemTable[arg3], curKey)
-		if not newKey then
-			newKey, value = next(Caterer.itemTable[arg3])
+		
+		local curValue = Caterer.itemTable[arg3][curKey]
+		local _, _, curValueIndex = string.find(curValue, "^(%d). ")
+		curValueIndex = tonumber(curValueIndex)
+		
+		local newValueIndex
+		for id, name in pairs(Caterer.itemTable[arg3]) do
+			_, _, newValueIndex = string.find(name, "^(%d). ")
+			newValueIndex = tonumber(newValueIndex)
+			if newValueIndex - curValueIndex == 1 or (curValueIndex == 7 and newValueIndex == 1) then
+				newKey = id
+				break
+			end
 		end
 		Caterer.db.profile[arg2][arg3] = newKey
 		self:UpdateText()

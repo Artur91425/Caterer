@@ -43,12 +43,22 @@ local defaults = {
 
 Caterer.itemTable = {
 	[1] = { -- food table
-		['22895'] = L["Conjured Cinnamon Roll"],
-		['8076'] = L["Conjured Sweet Roll"]
+		['22895'] = "7. "..L["Conjured Cinnamon Roll"],
+		['8076']  = "6. "..L["Conjured Sweet Roll"],
+		['8075']  = "5. "..L["Conjured Sourdough"],
+		['1487']  = "4. "..L["Conjured Pumpernickel"],
+		['1114']  = "3. "..L["Conjured Rye"],
+		['1113']  = "2. "..L["Conjured Bread"],
+		['5349']  = "1. "..L["Conjured Muffin"]
 	},
 	[2] = { -- water table
-		['8079'] = L["Conjured Crystal Water"],
-		['8078'] = L["Conjured Sparkling Water"]
+		['8079']  = "7. "..L["Conjured Crystal Water"],
+		['8078']  = "6. "..L["Conjured Sparkling Water"],
+		['8077']  = "5. "..L["Conjured Mineral Water"],
+		['3772']  = "4. "..L["Conjured Spring Water"],
+		['2136']  = "3. "..L["Conjured Purified Water"],
+		['2288']  = "2. "..L["Conjured Fresh Water"],
+		['5350']  = "1. "..L["Conjured Water"]
 	}
 }
 

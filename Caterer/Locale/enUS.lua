@@ -20,9 +20,21 @@ L:RegisterTranslations('enUS', function() return {
 	--Food
 	["Conjured Cinnamon Roll"] = true,
 	["Conjured Sweet Roll"] = true,
+	["Conjured Sourdough"] = true,
+	["Conjured Pumpernickel"] = true,
+	["Conjured Rye"] = true,
+	["Conjured Bread"] = true,
+	["Conjured Muffin"] = true,
 	--Water
 	["Conjured Crystal Water"] = true,
 	["Conjured Sparkling Water"] = true,
+	["Conjured Crystal Water"] = true,
+	["Conjured Sparkling Water"] = true,
+	["Conjured Mineral Water"] = true,
+	["Conjured Spring Water"] = true,
+	["Conjured Purified Water"] = true,
+	["Conjured Fresh Water"] = true,
+	["Conjured Water"] = true,
 	
 	--Options
 	["Food"] = true,
